@@ -70,7 +70,7 @@ robots
   robot  tipo2
   comenzar 
     area2Par
-    area3Impar
+    area4Par
   fin
 variables
   robot1: tipo1
