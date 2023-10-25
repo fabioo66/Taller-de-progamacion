@@ -1,0 +1,19 @@
+programa nombre
+procesos
+  proceso 
+  comenzar
+  fin
+areas
+  areaCompartida : AreaC(1,1,5,5)
+  areaPrivada : AreaP(9,9,9,9)
+  areaParcialmenteCompartida : AreaPC(18,18,18,18)
+robots
+  robot tipo1
+  comenzar
+  fin
+variables
+  robot1: tipo1
+comenzar
+  AsignarArea(areaCompartida)
+  Iniciar(7,7,7,7)
+fin  
