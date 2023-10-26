@@ -1,0 +1,94 @@
+programa nombre
+procesos
+  proceso juntarFlores(ES flores: numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flores:= flores + 1
+  fin
+
+  proceso juntarPapeles(ES papeles: numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      papeles:= papeles + 1
+  fin
+ 
+  proceso recorrerFlores(ES flores: numero)
+  comenzar
+    derecha
+    repetir 9
+      juntarFlores(flores)
+      mover
+    juntarFlores(flores)
+  fin
+
+  proceso recorrerPapeles(ES papeles: numero)
+  comenzar
+    derecha
+    repetir 9
+      juntarPapeles(papeles)
+      mover
+    juntarPapeles(papeles)
+  fin
+
+  
+
+areas
+  areaTeamA : AreaC(1,1,20,1)
+  areaTeamB : AreaC(1,5,20,5)
+robots
+  robot tipoA1
+  variables
+    papeles: numero 
+  comenzar
+    papeles:= 0
+    recorrerPapeles(papeles)
+    EnviarMensaje(V,robot3)
+    EnviarMensaje(papeles, robot2)
+  fin
+
+  robot tipoA2
+  variables
+    PapelesTotal: numero
+  comenzar
+    RecibirMensaje(PapelesTotal, robot1)
+    recorrerPapeles(PapelesTotal)
+    Informar(PapelesTotal)
+  fin
+
+  robot tipoB1
+  variables
+    flores: numero
+    go: boolean
+  comenzar
+    flores:= 0
+    RecibirMensaje(go,robot1)
+    recorrerFlores(flores)
+    EnviarMensaje(flores, robot4)
+  fin
+
+  robot tipoB2
+  variables
+    FloresTotal: numero
+  comenzar
+    RecibirMensaje(FloresTotal, robot3)
+    recorrerFlores(FloresTotal)
+    Informar(FloresTotal)
+  fin
+
+variables
+  robot1: tipoA1
+  robot2: tipoA2
+  robot3: tipoB1
+  robot4: tipoB2
+comenzar
+  AsignarArea(robot1, areaTeamA)
+  AsignarArea(robot2, areaTeamA)
+  AsignarArea(robot3, areaTeamB)
+  AsignarArea(robot4, areaTeamB)
+  Iniciar(robot1, 1,1)
+  Iniciar(robot2, 11,1)
+  Iniciar(robot3, 1,5)
+  Iniciar(robot4, 11,5)
+fin

@@ -1,0 +1,71 @@
+programa nombre
+procesos
+  proceso juntarFlores(ES flores: numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flores:= flores + 1
+  fin
+
+  proceso recorrer(ES flores: numero)
+  comenzar
+    repetir 9
+      juntarFlores(flores)
+      mover
+    juntarFlores(flores)
+  fin
+
+areas
+  areaRobot1 : AreaP(1,1,1,10)
+  areaRobot2 : AreaP(2,11,2,20)
+  areaRobot3 : AreaP(3,21,3,30)
+  areaRobot4 : AreaP(4,31,4,40)
+  areaRobot5 : AreaP(5,41,5,50)
+  areaRobot6 : AreaP(6,51,6,60)
+  areaFiscal : AreaP(2, 1, 2, 1)
+robots
+  robot tipo1
+  variables
+    flores: numero
+  comenzar
+    flores:= 0
+    recorrer(flores)
+    EnviarMensaje(flores, robot7)
+  fin
+
+  robot fiscal
+  variables
+    cantFlores, max: numero
+  comenzar
+    max:= 0
+    repetir 6
+      RecibirMensaje(cantFlores, *)
+      si(cantFlores > max)
+        max:= cantFlores
+    Informar(max)    
+  fin
+
+variables
+  robot1: tipo1
+  robot2: tipo1
+  robot3: tipo1
+  robot4: tipo1
+  robot5: tipo1
+  robot6: tipo1
+  robot7: fiscal
+comenzar
+  AsignarArea(robot1, areaRobot1)
+  AsignarArea(robot2, areaRobot2)
+  AsignarArea(robot3, areaRobot3)
+  AsignarArea(robot4, areaRobot4)
+  AsignarArea(robot5, areaRobot5)
+  AsignarArea(robot6, areaRobot6)
+  AsignarArea(robot7, areaFiscal)
+  Iniciar(robot1, 1,1)
+  Iniciar(robot2, 2,11)
+  Iniciar(robot3, 3,21)
+  Iniciar(robot4, 4,31)
+  Iniciar(robot5, 5,41)
+  Iniciar(robot6, 6,51)
+  Iniciar(robot7, 2,1)
+fin  
