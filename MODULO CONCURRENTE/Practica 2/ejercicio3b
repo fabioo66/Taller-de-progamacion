@@ -44,7 +44,6 @@ robots
   comenzar
     papeles:= 0
     recorrerPapeles(papeles)
-    EnviarMensaje(V,robot3)
     EnviarMensaje(papeles, robot2)
   fin
 
@@ -60,10 +59,8 @@ robots
   robot tipoB1
   variables
     flores: numero
-    go: boolean
   comenzar
     flores:= 0
-    RecibirMensaje(go,robot1)
     recorrerFlores(flores)
     EnviarMensaje(flores, robot4)
   fin
