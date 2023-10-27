@@ -1,0 +1,147 @@
+programa ejercicio4
+procesos
+  proceso juntarFlores(ES flores: numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flores:= flores + 1
+  fin
+  proceso juntarPapeles(ES papeles: numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      papeles:= papeles + 1
+  fin
+
+  proceso recoleccion(ES cantTotal: numero)
+  variables
+    flores, papeles, cant: numero
+  comenzar
+    flores:= 0
+    papeles:= 0
+    juntarFlores(flores)
+    juntarPapeles(papeles)
+    cant:= flores + papeles
+    cantTotal:= cantTotal + cant
+  fin
+  
+  proceso posicionar
+  variables
+    avenida, calle: numero
+  comenzar
+    Random(avenida, 25, 75)
+    Random(calle, 25, 75)
+    Pos(avenida, calle)
+  fin
+
+areas
+  areaParcialmenteCompartida : AreaPC(25,25,75,75) 
+  areaPrivadaRobot1 : AreaP(25,1,25,1)
+  areaPrivadaRobot2 : AreaP(30,1,30,1)
+  areaPrivadaRobot3 : AreaP(35,1,35,1)
+  areaPrivadaRobot4 : AreaP(40,1,40,1)
+  areaPrivadaRobot5 : AreaP(1,1,1,1)
+robots
+  robot recolector
+  variables
+    quien, cant, estado, calleInicio, avenidaInicio:numero
+  comenzar
+    RecibirMensaje(quien,robot5)
+    RecibirMensaje(estado,robot5)
+    cant:= 0
+    calleInicio := PosCa 
+    avenidaInicio:= PosAv
+    mientras (estado = 1)
+      posicionar
+      recoleccion(cant)
+      Pos(avenidaInicio,calleInicio)
+      EnviarMensaje(V, robot5)
+      RecibirMensaje(estado,robot5)
+    EnviarMensaje(quien, robot5)   
+    EnviarMensaje(cant,robot5)
+    RecibirMensaje(estado,robot5)
+    si (estado = 3)
+      Pos(50,50)
+  fin
+
+  robot fiscalizador
+  variables
+    numRobot, cantTotal, max, robotMax: numero
+    ready: boolean
+  comenzar
+    max:= 0
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    EnviarMensaje(4, robot4)
+    repetir 10
+      Random(numRobot, 1, 4)
+      si(numRobot = 1)
+        EnviarMensaje(1, robot1)
+      sino
+        si(numRobot = 2)
+          EnviarMensaje(1, robot2)
+        sino
+          si(numRobot = 3)
+            EnviarMensaje(1, robot3)
+          sino
+            EnviarMensaje(1, robot4)
+      RecibirMensaje(ready, *)
+    EnviarMensaje(2, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(2, robot3)
+    EnviarMensaje(2, robot4)
+    repetir 4
+      RecibirMensaje(numRobot, *)
+      si(numRobot = 1)
+        RecibirMensaje(cantTotal, robot1)
+      sino
+        si(numRobot = 2)
+          RecibirMensaje(cantTotal, robot2)
+        sino
+          si(numRobot = 3)
+            RecibirMensaje(cantTotal, robot3)
+          sino
+            RecibirMensaje(cantTotal, robot4)
+      si(cantTotal > max)
+        max:= cantTotal
+        robotMax:= numRobot
+    si(robotMax = 1)    
+      EnviarMensaje(3, robot1)
+    sino
+      EnviarMensaje(2, robot1)
+    si(robotMax = 2)
+      EnviarMensaje(3, robot2)
+    sino
+      EnviarMensaje(2, robot2)
+    si(robotMax = 3)
+      EnviarMensaje(3, robot3)
+    sino
+      EnviarMensaje(2, robot3)
+    si(robotMax = 4)
+      EnviarMensaje(3, robot4)
+    sino
+      EnviarMensaje(2, robot4)  
+  fin
+variables
+  robot1: recolector
+  robot2: recolector
+  robot3: recolector
+  robot4: recolector
+  robot5: fiscalizador  
+comenzar
+  AsignarArea(robot1, areaParcialmenteCompartida)
+  AsignarArea(robot2, areaParcialmenteCompartida)
+  AsignarArea(robot3, areaParcialmenteCompartida)
+  AsignarArea(robot4, areaParcialmenteCompartida)
+  AsignarArea(robot1, areaPrivadaRobot1)
+  AsignarArea(robot2, areaPrivadaRobot2)
+  AsignarArea(robot3, areaPrivadaRobot3)
+  AsignarArea(robot4, areaPrivadaRobot4)
+  AsignarArea(robot5, areaPrivadaRobot5)
+  Iniciar(robot1, 25,1)
+  Iniciar(robot2, 30,1)
+  Iniciar(robot3, 35,1)
+  Iniciar(robot4, 40,1)
+  Iniciar(robot5, 1,1)
+fin
