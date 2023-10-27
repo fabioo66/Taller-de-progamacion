@@ -14,6 +14,6 @@ robots
 variables
   robot1: tipo1
 comenzar
-  AsignarArea(areaCompartida)
-  Iniciar(7,7,7,7)
-fin  
+  AsignarArea(robot1, areaCompartida)
+  Iniciar(robot1, 1,1)
+fin 
