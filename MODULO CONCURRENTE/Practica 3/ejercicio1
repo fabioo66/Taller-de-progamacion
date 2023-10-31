@@ -1,0 +1,102 @@
+programa ejercicio1
+procesos
+  proceso juntarFlores
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso tirarFlores
+  comenzar
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+  fin
+  proceso juntarPapeles
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+  fin
+  proceso tirarPapeles
+  comenzar
+    mientras(HayPapelEnLaBolsa)
+      depositarPapel
+  fin
+  proceso posicionarFloreros
+  variables
+    avenida, calle: numero
+  comenzar
+    Random(avenida, 1, 5)
+    Random(calle, 1, 10)
+    Pos(avenida, calle)
+  fin
+  proceso posicionarPapeleros
+  variables
+    avenida, calle: numero
+  comenzar
+    Random(avenida, 6, 10)
+    Random(calle, 1, 9)
+    Pos(avenida, calle)
+  fin  
+areas
+  areaFloreros : AreaC(1,1,5,10)
+  areaPapeleros : AreaC(6,1,10,9)
+  areaFlorero1 : AreaP(6,10,6,10)
+  areaFlorero2 : AreaP(7,10,7,10)
+  areaPapelero1 : AreaP(8,10,8,10)
+  areaPapelero2 : AreaP(9,10,9,10)
+  areaCompartida : AreaC(10,10,10,10)
+robots
+  robot floreros
+  variables
+    avenidaInicio, calleInicio: numero 
+  comenzar
+    avenidaInicio:= PosAv
+    calleInicio:= PosCa
+    repetir 5
+      posicionarFloreros
+      juntarFlores
+      Pos(avenidaInicio, calleInicio)
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    tirarFlores
+    Pos(avenidaInicio, calleInicio)
+    LiberarEsquina(10,10)  
+  fin
+  robot papeleros
+  variables
+    avenidaInicio, calleInicio: numero  
+  comenzar
+    avenidaInicio:= PosAv
+    calleInicio:= PosCa
+    repetir 3
+      posicionarPapeleros
+      juntarPapeles
+      Pos(avenidaInicio, calleInicio)
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    tirarPapeles
+    Pos(avenidaInicio, calleInicio)
+    LiberarEsquina(10,10)     
+  fin
+variables
+  robot1: floreros
+  robot2: floreros
+  robot3: papeleros
+  robot4: papeleros
+comenzar
+  AsignarArea(robot1, areaFloreros)
+  AsignarArea(robot1, areaFlorero1)
+  AsignarArea(robot1, areaCompartida)
+  AsignarArea(robot2, areaFloreros)
+  AsignarArea(robot2, areaFlorero2)
+  AsignarArea(robot2, areaCompartida)
+  AsignarArea(robot3, areaPapeleros)
+  AsignarArea(robot3, areaPapelero1)
+  AsignarArea(robot3, areaCompartida)
+  AsignarArea(robot4, areaPapeleros)
+  AsignarArea(robot4, areaPapelero2)
+  AsignarArea(robot4, areaCompartida)
+  Iniciar(robot1, 6,10)
+  Iniciar(robot2, 7,10)
+  Iniciar(robot3, 8,10)
+  Iniciar(robot4, 9,10)
+fin  
