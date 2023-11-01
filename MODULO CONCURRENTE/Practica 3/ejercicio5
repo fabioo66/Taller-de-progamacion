@@ -1,0 +1,59 @@
+programa ejercicio5  
+areas
+  areaJefe : AreaP(1,1,1,1)
+  areaParcialmenteCompartida : AreaPC(11,11,11,11)
+  areaRobot1 : AreaP(4,1,4,100)
+  areaRobot2 : AreaP(6,1,6,100)
+  areaRobot3 : AreaP(8,1,8,100)
+  areaRobot4 : AreaP(10,1,10,100)
+robots
+  robot piloto
+  variables
+    estado, avActual, caActual: numero
+  comenzar
+    estado:= 1
+    mientras(estado = 1)
+      avActual:= PosAv
+      caActual:= PosCa
+      BloquearEsquina(11,11)
+      Pos(11,11)
+      si(HayPapelEnLaEsquina)
+        tomarPapel
+      sino
+        estado:= 0
+      Pos(avActual, caActual)
+      LiberarEsquina(11,11)
+      si(estado = 1)
+        depositarPapel
+        mover
+    EnviarMensaje(V, robot5)  
+  fin
+  robot jefe
+  variables
+    ready: boolean
+  comenzar
+    repetir 4
+      RecibirMensaje(ready, *)   
+  fin
+variables
+  robot1: piloto
+  robot2: piloto
+  robot3: piloto
+  robot4: piloto
+  robot5: jefe
+comenzar
+  AsignarArea(robot1, areaParcialmenteCompartida)
+  AsignarArea(robot1, areaRobot1)
+  AsignarArea(robot2, areaParcialmenteCompartida)
+  AsignarArea(robot2, areaRobot2)
+  AsignarArea(robot3, areaParcialmenteCompartida)
+  AsignarArea(robot3, areaRobot3)
+  AsignarArea(robot4, areaParcialmenteCompartida)
+  AsignarArea(robot4, areaRobot4)
+  AsignarArea(robot5, areaJefe)
+  Iniciar(robot1, 4,1)
+  Iniciar(robot2, 6,1)
+  Iniciar(robot3, 8,1)
+  Iniciar(robot4, 10,1)
+  Iniciar(robot5, 1,1)
+fin
