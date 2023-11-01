@@ -1,0 +1,158 @@
+programa ejercicio6
+procesos 
+  proceso juntarFlores  
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso juntarPapeles
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+  fin
+  proceso juntarTodo
+  comenzar
+    juntarFlores
+    juntarPapeles
+  fin
+  proceso cuadradoRobot1
+  comenzar
+    repetir 4
+      repetir 5
+        juntarFlores
+        si((PosAv = 4) & (PosCa = 7))
+          BloquearEsquina(5,7)
+        si((PosAv = 7) & (PosCa = 6))
+          BloquearEsquina(7,5)  
+        mover
+        si((PosAv = 6) & (PosCa = 7))
+          LiberarEsquina(5,7)
+        si((PosAv = 7) & (PosCa = 4))
+          LiberarEsquina(7,5)
+      derecha      
+  fin
+  proceso cuadradoRobot2
+  comenzar
+    repetir 4
+      repetir 9
+        juntarTodo
+        si((PosAv = 5) & (PosCa = 6))
+          BloquearEsquina(5, 7)
+        si((PosAv = 8) & (PosCa = 14))
+          BloquearEsquina(9,14)
+        si((PosAv = 14) & (PosCa = 10))
+          BloquearEsquina(14, 9)  
+        mover
+        si((PosAv = 5) & (PosCa = 8))
+          LiberarEsquina(5,7)
+        si((PosAv = 9) & (PosCa = 14))
+          LiberarEsquina(9,14)
+        si((PosAv = 14) & (PosCa = 8))
+          LiberarEsquina(14,9)    
+      derecha
+  fin
+  proceso cuadradoRobot3
+  comenzar
+    repetir 4
+      repetir 6
+        juntarPapeles
+        si((PosAv = 9) & (PosCa = 13))
+          BloquearEsquina(9,14)
+        si((PosAv = 15) & (PosCa = 9))
+          BloquearEsquina(14, 9)  
+        mover
+        si((PosAv = 9) & (PosCa = 15))
+          LiberarEsquina(9,14)
+        si((PosAv = 13) & (PosCa = 9))
+          LiberarEsquina(14,9)  
+      derecha
+  fin
+  proceso tirar
+  comenzar
+    si(HayFlorEnLaBolsa)
+      depositarFlor
+    si(HayPapelEnLaBolsa)
+      depositarPapel
+  fin
+areas
+  areaCompartida : AreaC(1,1,100,100)
+robots
+  robot recolector1
+  variables
+    quien,calle: numero
+  comenzar
+    RecibirMensaje(quien, robot4)
+    cuadradoRobot1
+    EnviarMensaje(quien, robot4)
+    RecibirMensaje(calle, robot4)
+    Pos(1, calle)
+    derecha
+    mientras((HayFlorEnLaBolsa) & (PosCa<100))
+      depositarFlor
+      mover
+  fin
+  robot recolector2
+  variables
+    quien,calle: numero
+  comenzar
+    RecibirMensaje(quien, robot4)
+    cuadradoRobot2
+    EnviarMensaje(quien, robot4)
+    RecibirMensaje(calle, robot4)
+    Pos(1, calle)
+    derecha
+    mientras((HayFlorEnLaBolsa | HayPapelEnLaBolsa) & (PosCa<100))
+      tirar
+      mover
+  fin
+  robot recolector3
+  variables
+    quien,calle: numero
+  comenzar
+    RecibirMensaje(quien, robot4)
+    cuadradoRobot3
+    EnviarMensaje(quien, robot4)
+    RecibirMensaje(calle, robot4)
+    Pos(1, calle)
+    derecha
+    mientras((HayPapelEnLaBolsa) & (PosCa<100))
+      depositarPapel
+      mover
+  fin
+  robot jefe
+  variables
+    quien, ca, r1, r2, r3: numero
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    ca:= 20
+    repetir 3
+      RecibirMensaje(quien,*)
+      si (quien = 1)
+        r1:= ca
+      sino
+        si (quien = 2)
+          r2:= ca
+        sino
+          r3:= ca
+      ca:= ca + 1
+    EnviarMensaje(r1, robot1)
+    EnviarMensaje(r2, robot2) 
+    EnviarMensaje(r3, robot3)                  
+  fin
+variables
+  robot1: recolector1
+  robot2: recolector2
+  robot3: recolector3
+  robot4: jefe
+comenzar
+  AsignarArea(robot1, areaCompartida)
+  AsignarArea(robot2, areaCompartida)
+  AsignarArea(robot3, areaCompartida)
+  AsignarArea(robot4, areaCompartida)
+  Iniciar(robot1, 2,2)
+  Iniciar(robot2, 5,5)
+  Iniciar(robot3, 9,9)
+  Iniciar(robot4, 1,1)
+fin    
