@@ -74,6 +74,24 @@ procesos
     si(HayPapelEnLaBolsa)
       depositarPapel
   fin
+  proceso recorrerR1
+  comenzar
+    mientras((HayFlorEnLaBolsa) & (PosAv < 100))
+      depositarFlor
+      mover
+  fin    
+  proceso recorrerR2
+  comenzar
+    mientras((HayFlorEnLaBolsa | HayPapelEnLaBolsa) & (PosAv < 100))
+      tirar
+      mover
+  fin
+  proceso recorrerR3
+  comenzar
+  mientras((HayPapelEnLaBolsa) & (PosAv < 100))
+      depositarPapel
+      mover  
+  fin
 areas
   areaCompartida : AreaC(1,1,100,100)
 robots
@@ -87,9 +105,7 @@ robots
     RecibirMensaje(calle, robot4)
     Pos(1, calle)
     derecha
-    mientras((HayFlorEnLaBolsa) & (PosCa < 100))
-      depositarFlor
-      mover
+    recorrerR1
   fin
   robot recolector2
   variables
@@ -101,9 +117,7 @@ robots
     RecibirMensaje(calle, robot4)
     Pos(1, calle)
     derecha
-    mientras((HayFlorEnLaBolsa | HayPapelEnLaBolsa) & (PosCa < 100))
-      tirar
-      mover
+    recorrerR2
   fin
   robot recolector3
   variables
@@ -115,9 +129,7 @@ robots
     RecibirMensaje(calle, robot4)
     Pos(1, calle)
     derecha
-    mientras((HayPapelEnLaBolsa) & (PosCa < 100))
-      depositarPapel
-      mover
+    recorrerR3
   fin
   robot jefe
   variables
