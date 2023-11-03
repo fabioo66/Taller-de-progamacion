@@ -1,0 +1,88 @@
+programa ejercicio4
+procesos
+  proceso juntarFlores
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso juntarPapeles
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+  fin
+  proceso vaciarBolsa
+  comenzar
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+    mientras(HayPapelEnLaBolsa)
+      depositarPapel  
+  fin
+areas
+  areaEsclavos : AreaPC(2,2,100,100)
+  areaJefe : AreaP(1,1,1,1)
+  areaEsclavo1 : AreaP(2,1,2,1)
+  areaEsclavo2 : AreaP(3,1,3,1)
+robots
+  robot esclavo
+  variables
+    quien, tarea, avenida, calle: numero
+  comenzar
+    RecibirMensaje(quien, robot3)
+    RecibirMensaje(tarea, robot3)
+    RecibirMensaje(avenida, robot3)
+    RecibirMensaje(calle, robot3)
+    mientras(tarea <> 4)
+      si(tarea = 1)
+        Pos(avenida, calle)
+        juntarFlores
+      sino 
+        si(tarea = 2)
+          Pos(avenida, calle)
+          juntarPapeles
+        sino
+          Pos(avenida, calle)
+          vaciarBolsa
+      EnviarMensaje(V, robot3)           
+      RecibirMensaje(tarea, robot3)
+      si(tarea <> 4)
+        RecibirMensaje(avenida, robot3)
+        RecibirMensaje(calle, robot3)
+  fin
+  robot jefe
+  variables
+    tareaRandom, robotRandom, avRandom, caRandom: numero
+    ready: boolean
+  comenzar
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    repetir 10
+      Random(robotRandom, 1,2)
+      Random(tareaRandom, 1,3)
+      Random(avRandom, 2,100)
+      Random(caRandom, 2,100)
+      si(robotRandom = 1)
+        EnviarMensaje(tareaRandom, robot1)
+        EnviarMensaje(avRandom, robot1)
+        EnviarMensaje(caRandom, robot1)
+      sino
+        EnviarMensaje(tareaRandom, robot2)
+        EnviarMensaje(avRandom, robot2)
+        EnviarMensaje(caRandom, robot2)
+      RecibirMensaje(ready, *)
+    EnviarMensaje(4, robot1)
+    EnviarMensaje(4, robot2)      
+  fin
+variables
+  robot1: esclavo
+  robot2: esclavo
+  robot3: jefe
+comenzar
+  AsignarArea(robot1, areaEsclavos)
+  AsignarArea(robot1, areaEsclavo1)
+  AsignarArea(robot2, areaEsclavos)
+  AsignarArea(robot2, areaEsclavo2)
+  AsignarArea(robot3, areaJefe)
+  Iniciar(robot1, 2,1)
+  Iniciar(robot2, 3,1)
+  Iniciar(robot3, 1,1)
+fin  

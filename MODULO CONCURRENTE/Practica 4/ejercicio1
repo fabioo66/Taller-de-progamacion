@@ -1,0 +1,115 @@
+programa ejercicio1
+procesos
+  proceso juntarFlores
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso recorrer
+  comenzar
+    mientras((HayFlorEnLaBolsa) & (PosCa < 100))
+      depositarFlor
+      mover
+  fin
+areas
+  areaServidor : AreaP(100,100,100,100)
+  areaRobot1 : AreaP(1,1,1,1)
+  areaRobot2 : AreaP(2,1,2,1)
+  areaRobot3 : AreaP(3,1,3,1)
+  areaRobot1Jefe : AreaPC(1,2,1,100)
+  areaRobot2Jefe : AreaPC(2,2,2,100)
+  areaRobot3Jefe : AreaPC(3,2,3,100)
+robots
+  robot cliente
+  variables
+    flores, avenidaActual, calleSig, quien: numero
+    go, termine: boolean
+  comenzar
+    RecibirMensaje(quien, robot4)
+    mientras(PosCa < 100)
+      avenidaActual:= PosAv
+      calleSig:= PosCa+1
+      Random(flores, 1, 4)
+      EnviarMensaje(quien, robot4)
+      EnviarMensaje(flores, robot4)
+      EnviarMensaje(avenidaActual, robot4)
+      EnviarMensaje(calleSig, robot4)
+      RecibirMensaje(go, robot4)
+      mover
+      juntarFlores
+      Pos(avenidaActual, calleSig-1)
+      recorrer {recorre la avenida n flores}
+    EnviarMensaje(quien, robot4)  
+    EnviarMensaje(0, robot4)   
+  fin
+  robot servidor
+  variables
+    cantFinish, quien, avenida, calle, flores: numero
+  comenzar
+    cantFinish:= 0 
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    RecibirMensaje(quien, *)
+    mientras(cantFinish <> 3)
+      si(quien = 1)
+        RecibirMensaje(flores, robot1)
+        si(flores <> 0)
+          RecibirMensaje(avenida, robot1)
+          RecibirMensaje(calle, robot1)
+          Pos(avenida, calle)
+          repetir flores 
+            depositarFlor
+          Pos(100,100)
+          EnviarMensaje(V, robot1)
+        sino
+          cantFinish:= cantFinish + 1
+      sino    
+        si(quien = 2)
+          RecibirMensaje(flores, robot2)
+          si(flores <> 0)
+            RecibirMensaje(avenida, robot2)
+            RecibirMensaje(calle, robot2)
+            Pos(avenida, calle)
+            repetir flores 
+              depositarFlor
+            Pos(100,100)
+            EnviarMensaje(V, robot2)
+          sino
+            cantFinish:= cantFinish + 1
+        sino    
+          si(quien = 3)
+            RecibirMensaje(flores, robot3)
+            si(flores <> 0)
+              RecibirMensaje(avenida, robot3)
+              RecibirMensaje(calle, robot3)
+              Pos(avenida, calle)
+              repetir flores 
+                depositarFlor
+              Pos(100,100)
+              EnviarMensaje(V, robot3)
+            sino
+              cantFinish:= cantFinish + 1
+      RecibirMensaje(quien, *)                    
+  fin
+variables
+  robot1: cliente
+  robot2: cliente
+  robot3: cliente
+  robot4: servidor
+comenzar
+  AsignarArea(robot1, areaRobot1)
+  AsignarArea(robot1, areaRobot1Jefe)
+  AsignarArea(robot2, areaRobot2)
+  AsignarArea(robot2, areaRobot2Jefe)
+  AsignarArea(robot3, areaRobot3)
+  AsignarArea(robot3, areaRobot3Jefe)
+  AsignarArea(robot4, areaRobot1Jefe)
+  AsignarArea(robot4, areaRobot2Jefe)
+  AsignarArea(robot4, areaRobot3Jefe)
+  AsignarArea(robot4, areaServidor)
+  Iniciar(robot1, 1,1)
+  Iniciar(robot2, 2,1)
+  Iniciar(robot3, 3,1)
+  Iniciar(robot4, 100,100)
+fin  

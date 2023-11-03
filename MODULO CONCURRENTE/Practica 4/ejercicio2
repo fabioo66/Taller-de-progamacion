@@ -1,0 +1,91 @@
+programa ejercicio2
+procesos
+  proceso juntarPapeles(ES papeles: numero; E limite: numero)
+  comenzar
+    mientras((HayPapelEnLaEsquina) & (papeles <> limite))
+      tomarPapel
+      papeles:= papeles + 1
+  fin
+  proceso depositar(E avenida: numero; E calle: numero)
+  comenzar
+    BloquearEsquina(50,50)
+    Pos(50,50)
+    repetir 5
+      depositarPapel
+    Pos(avenida, calle)
+    LiberarEsquina(50,50)  
+  fin
+  proceso recorrer
+  variables 
+    papeles, avenida, calle: numero
+  comenzar
+    papeles:= 0
+    mientras(PosCa < 100)
+      avenida:= PosAv
+      calle:= PosCa
+      mientras(HayPapelEnLaEsquina) {mientras haya papeles en una esq, los junto}
+        juntarPapeles(papeles,5) {junta papeles hasta conseguir 5 o hasta que no haya mas papeles en la esquina}
+        si(papeles = 5)
+          depositar(avenida, calle) {bloquea la  Pos(50,50) deposita los 5 papeles, vuelve y la libera}
+          papeles:= 0
+      mover 
+  fin
+  proceso tirarPapeles
+  comenzar
+    mientras(HayPapelEnLaBolsa)
+      depositarPapel
+  fin
+areas
+  areaCompartida : AreaC(50,50,50,50)
+  areaProductor1 : AreaP(5,1,5,100)
+  areaProductor2 : AreaP(10,1,10,100)
+  areaConsumidor1 : AreaP(11,1,11,1)
+  areaConsumidor2 : AreaP(12,1,12,1)
+robots
+  robot productor
+  comenzar
+    recorrer        
+  fin
+  robot consumidor
+  variables
+    cantPapelesRandom, avInicio, caInicio, cantFinish, cantPapeles: numero
+  comenzar
+    cantFinish:= 0
+    avInicio:= PosAv
+    caInicio:= PosCa
+    mientras(cantFinish < 9)
+      cantPapeles:= 0
+      Random(cantPapelesRandom,2,5)
+      BloquearEsquina(50,50)
+      Pos(50,50)
+      juntarPapeles(cantPapeles, cantPapelesRandom)
+      si(cantPapeles < 2)
+        tirarPapeles {tira todos los papeles de la bolsa}
+        Pos(avInicio, caInicio)
+        LiberarEsquina(50,50)
+        cantFinish:= cantFinish + 1
+      sino
+        cantFinish:= 0 {reseteo el contador}
+        Pos(avInicio, caInicio) 
+        LiberarEsquina(50,50)
+        tirarPapeles
+  fin
+variables
+  robot1: productor
+  robot2: productor
+  robot3: consumidor
+  robot4: consumidor
+comenzar
+  AsignarArea(robot1, areaCompartida)
+  AsignarArea(robot1, areaProductor1)
+  AsignarArea(robot2, areaCompartida)
+  AsignarArea(robot2, areaProductor2)
+  AsignarArea(robot3, areaCompartida)
+  AsignarArea(robot3, areaConsumidor1)
+  AsignarArea(robot4, areaCompartida)
+  AsignarArea(robot4, areaConsumidor2)
+  Iniciar(robot1, 5,1)
+  Iniciar(robot2, 10,1)
+  Iniciar(robot3, 11,1)
+  Iniciar(robot4, 12,1)
+fin  
