@@ -46,6 +46,9 @@ robots
         RecibirMensaje(go, *)
         si(go <> F)
           RecibirMensaje(go, *)
+        sino  
+          RecibirMensaje(go, *)
+          go:= F  
     si(PosCa = 100)
       si(quien = 1)
         EnviarMensaje(F,robot2)
