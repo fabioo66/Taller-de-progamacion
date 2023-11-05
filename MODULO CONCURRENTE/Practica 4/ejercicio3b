@@ -1,23 +1,20 @@
 programa ejercicio3b
 procesos
-  proceso juntarPapeles(E limite: numero)
-  variables
-    papeles: numero
+  proceso juntarPapelesLimite(E limite: numero; ES papeles: numero)
   comenzar
-    papeles:= 0
     mientras((HayPapelEnLaEsquina) & (papeles <> limite))
       tomarPapel
       papeles:= papeles + 1
   fin    
-  proceso etapa
+  proceso etapa(ES cantrandom:numero)
   variables
-    papelesRandom: numero
+    papeles:numero
   comenzar
-    mientras(PosCa < 100)
-      Random(papelesRandom, 1,5)
-      mientras(HayPapelEnLaEsquina)
-        juntarPapeles(papelesRandom)
-      mover  
+    papeles:= 0
+    mientras ((papeles <> cantrandom) & (PosCa < 100))
+      juntarPapelesLimite(cantrandom,papeles)
+      si (papeles <> cantrandom)
+        mover
   fin
 areas
   areaRobot1 : AreaP(1,1,1,100)
@@ -25,44 +22,41 @@ areas
   areaRobot3 : AreaP(3,1,3,100)
   areaJefe : AreaP(4,1,4,1)
 robots
-  robot recolectorR1
+  robot recolector
   variables
-    quien: numero
+    quien, papelesRandom: numero
     go: boolean
   comenzar
+    go:= V
     RecibirMensaje(quien, robot4)
-    mientras(PosCa < 100)
-      etapa
-      EnviarMensaje(V, robot2)
-      EnviarMensaje(V, robot3)
-      repetir 2
-        RecibirMensaje(go, *) 
-  fin
-  robot recolectorR2
-  variables
-    quien: numero
-    go: boolean
-  comenzar
-    RecibirMensaje(quien, robot4)
-    mientras(PosCa < 100)
-      etapa
-      EnviarMensaje(V, robot1)
-      EnviarMensaje(V, robot3)
-      repetir 2
-        RecibirMensaje(go, *) 
-  fin
-  robot recolectorR3
-  variables
-    quien: numero
-    go: boolean
-  comenzar
-    RecibirMensaje(quien, robot4)
-    mientras(PosCa < 100)
-      etapa
-      EnviarMensaje(V, robot1)
-      EnviarMensaje(V, robot2)
-      repetir 2
-        RecibirMensaje(go, *)  
+    mientras((PosCa < 100) & (go <> F))
+      Random(papelesRandom, 1,5)
+      etapa(papelesRandom)
+      si(PosCa <> 100)
+        si(quien = 1)
+          EnviarMensaje(V,robot2)
+          EnviarMensaje(V,robot3)
+        sino
+          si(quien = 2)
+            EnviarMensaje(V,robot1)
+            EnviarMensaje(V,robot3)
+          sino
+            EnviarMensaje(V,robot1)
+            EnviarMensaje(V,robot2)
+        RecibirMensaje(go, *)
+        si(go <> F)
+          RecibirMensaje(go, *)
+    si(PosCa = 100)
+      si(quien = 1)
+        EnviarMensaje(F,robot2)
+        EnviarMensaje(F,robot3)
+      sino
+        si(quien = 2)
+          EnviarMensaje(F,robot1)
+          EnviarMensaje(F,robot3)
+        sino
+          EnviarMensaje(F,robot1)
+          EnviarMensaje(F,robot2)                    
   fin
   robot jefe
   comenzar
@@ -71,9 +65,9 @@ robots
     EnviarMensaje(3,robot3)
   fin
 variables
-  robot1: recolectorR1
-  robot2: recolectorR2
-  robot3: recolectorR3
+  robot1: recolector
+  robot2: recolector
+  robot3: recolector
   robot4: jefe
 comenzar
   AsignarArea(robot1, areaRobot1)
