@@ -11,16 +11,16 @@ procesos
     mientras(HayFlorEnLaBolsa)
       depositarFlor
   fin
-  proceso recorrer
+  proceso recorrer(ES flor: numero)
   variables
-    pasos, flor: numero
+    pasos: numero
   comenzar
     pasos:= 0
-    flor:= 0
     mientras(((pasos <> 5) & (flor <> 10)) & (PosAv < 100))
       juntarFlor(flor)
-      mover
-      pasos:= pasos + 1
+      si(flor <> 10)
+        mover
+        pasos:= pasos + 1
   fin
   proceso depositar(E avInicial: numero; E caInicial: numero)
   comenzar
@@ -52,16 +52,26 @@ areas
 robots
   robot recolector
   variables
-    avInicial, caInicial: numero
+    avInicial, caInicial, flor: numero
+    termine: boolean
   comenzar
     derecha
+    flor:= 0
+    termine:= F
     mientras(PosAv < 100)
-      recorrer
-      avInicial:= PosAv
-      caInicial:= PosCa
-      depositar(avInicial, caInicial)
-      EnviarMensaje(1, robot3)
-    EnviarMensaje(0, robot3)
+      recorrer(flor)
+      si(PosAv < 100)
+        si(flor = 10)
+          flor:= 0
+        avInicial:= PosAv
+        caInicial:= PosCa
+        depositar(avInicial, caInicial)
+        EnviarMensaje(1, robot3)
+      sino
+        EnviarMensaje(0, robot3)
+        termine:= V
+    si(termine = F)
+      EnviarMensaje(0, robot3)    
   fin
   robot cosechador
   variables
