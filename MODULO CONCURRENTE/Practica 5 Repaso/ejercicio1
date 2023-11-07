@@ -12,32 +12,32 @@ procesos
       tomarPapel
       papeles:= papeles + 1
   fin
-  proceso recorrerFlores(ES flores: numero; E avenida: numero)
+  proceso recorrerFlores(ES flores: numero)
   comenzar
     repetir 97
       juntarFlores(flores)
       mover
-    BloquearEsquina(avenida,98)
+    BloquearEsquina(PosAv+1,98)
     juntarFlores(flores)
-    BloquearEsquina(avenida,99)
+    BloquearEsquina(PosAv+1,99)
     mover
-    LiberarEsquina(avenida,98)
+    LiberarEsquina(PosAv+1,98)
     juntarFlores(flores)
     mover
-    LiberarEsquina(avenida,99)
+    LiberarEsquina(PosAv+1,99)
     juntarFlores(flores)  
   fin
-  proceso recorrerPapeles(ES papeles: numero; E calle: numero)
+  proceso recorrerPapeles(ES papeles: numero)
   comenzar
-    BloquearEsquina(2,calle)
+    BloquearEsquina(2,PosCa+1)
     juntarPapeles(papeles)
     mover
-    BloquearEsquina(3,calle)
+    BloquearEsquina(3,PosCa+1)
     mover
-    LiberarEsquina(2,calle)
+    LiberarEsquina(2,PosCa+1)
     juntarPapeles(papeles)
     mover
-    LiberarEsquina(3,calle)
+    LiberarEsquina(3,PosCa+1)
     juntarPapeles(papeles)
     repetir 96
       juntarPapeles(papeles)
@@ -63,9 +63,9 @@ robots
     flores:= 0
     RecibirMensaje(quien, robot5)
     si(quien = 1)
-      recorrerFlores(flores, 2)
+      recorrerFlores(flores)
     sino
-      recorrerFlores(flores, 3)
+      recorrerFlores(flores)
     si(quien = 1)
       EnviarMensaje(flores, robot2)
     sino 
@@ -81,10 +81,7 @@ robots
     papeles:= 0
     RecibirMensaje(quien, robot5)
     derecha
-    si(quien = 3)
-      recorrerPapeles(papeles, 98)
-    sino
-      recorrerPapeles(papeles, 99)
+    recorrerPapeles(papeles)
     si(quien = 3)
       EnviarMensaje(papeles, robot4)
     sino
