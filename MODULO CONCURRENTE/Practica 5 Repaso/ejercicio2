@@ -1,0 +1,95 @@
+programa ejercicio2
+procesos
+  proceso juntarFlores(ES flores: numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flores:= flores + 1
+  fin
+  proceso tirarFlores
+  comenzar
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+  fin
+  proceso etapa
+  variables
+    flores: numero
+  comenzar
+    repetir 9
+      juntarFlores(flores)
+      mover  
+  fin
+  proceso depositar(E avInicial: numero; E caInicial: numero)
+  comenzar
+    BloquearEsquina(50,50)
+    Pos(50,50)
+    tirarFlores
+    Pos(avInicial, caInicial)
+    LiberarEsquina(50,50)
+  fin
+areas
+  areaRecolector1 : AreaP(1,1,100,1)
+  areaRecolector2 : AreaP(1,2,100,2)
+  areaRecolector3 : AreaP(1,3,100,3)
+  areaFiscal : AreaP(1,4,1,4)
+  areaCompartida : AreaC(50,50,50,50)
+robots
+  robot recolector
+  variables
+    avInicial, caInicial, quien: numero
+    go: boolean
+  comenzar
+    derecha
+    RecibirMensaje(quien, robot4)
+    repetir 11
+      etapa
+      avInicial:= PosAv
+      caInicial:= PosCa
+      depositar(avInicial, caInicial)
+      si(quien = 1)
+        EnviarMensaje(V, robot2)
+        EnviarMensaje(V, robot3)
+      sino
+        si(quien = 2)
+          EnviarMensaje(V, robot1)
+          EnviarMensaje(V, robot3)
+        sino
+          EnviarMensaje(V, robot1)
+          EnviarMensaje(V, robot2)
+      repetir 2
+        RecibirMensaje(go, *)
+    EnviarMensaje(V, robot4)            
+  fin
+  robot fiscal
+  variables
+    flores, ready: numero
+  comenzar
+    flores:= 0
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    repetir 3
+      RecibirMensaje(ready, *)
+    Pos(50,50)
+    juntarFlores(flores)
+    Informar(flores)  
+  fin
+variables
+  robot1: recolector 
+  robot2: recolector 
+  robot3: recolector 
+  robot4: fiscal
+comenzar
+  AsignarArea(robot1, areaRecolector1)
+  AsignarArea(robot1, areaCompartida)
+  AsignarArea(robot2, areaRecolector2)
+  AsignarArea(robot2, areaCompartida)
+  AsignarArea(robot3, areaRecolector3)
+  AsignarArea(robot3, areaCompartida)
+  AsignarArea(robot4, areaFiscal)
+  AsignarArea(robot4, areaCompartida)  
+  Iniciar(robot1, 1,1)
+  Iniciar(robot2, 1,2)
+  Iniciar(robot3, 1,3)
+  Iniciar(robot4, 1,4)
+fin  

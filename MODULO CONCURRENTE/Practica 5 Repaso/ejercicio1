@@ -1,0 +1,144 @@
+programa ejercicio1
+procesos
+  proceso juntarFlores(ES flores: numero) 
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flores:= flores + 1
+  fin
+  proceso juntarPapeles(ES papeles: numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      papeles:= papeles + 1
+  fin
+  proceso recorrerFlores(ES flores: numero; E avenida: numero)
+  comenzar
+    repetir 97
+      juntarFlores(flores)
+      mover
+    BloquearEsquina(avenida,98)
+    juntarFlores(flores)
+    BloquearEsquina(avenida,99)
+    mover
+    LiberarEsquina(avenida,98)
+    juntarFlores(flores)
+    mover
+    LiberarEsquina(avenida,99)
+    juntarFlores(flores)  
+  fin
+  proceso recorrerPapeles(ES papeles: numero; E calle: numero)
+  comenzar
+    BloquearEsquina(2,calle)
+    juntarPapeles(papeles)
+    mover
+    BloquearEsquina(3,calle)
+    mover
+    LiberarEsquina(2,calle)
+    juntarPapeles(papeles)
+    mover
+    LiberarEsquina(3,calle)
+    juntarPapeles(papeles)
+    repetir 96
+      juntarPapeles(papeles)
+      mover
+    juntarPapeles(papeles)  
+  fin
+areas
+  areaRobotRojo1 : AreaP(2,1,2,97)
+  areaRobotRojo11 : AreaP(2,100,2,100)
+  areaRobotRojo2 : AreaP(3,1,3,97)
+  areaRobotRojo22 : AreaP(3,100,3,100)
+  areaRobotAzul1 : AreaP(1,98,1,98)
+  areaRobotAzul11 : AreaP(4,98,100,98)
+  areaRobotAzul2 : AreaP(1,99,1,99)
+  areaRobotAzul22 : AreaP(4,99,100,99)
+  areaParcialmenteCompartida : AreaPC(2,98,3,99)
+  areaCoordinador : AreaP(1,1,1,1)
+robots
+  robot rojo
+  variables
+    quien, flores, total, floresRecibidas: numero
+  comenzar
+    flores:= 0
+    RecibirMensaje(quien, robot5)
+    si(quien = 1)
+      recorrerFlores(flores, 2)
+    sino
+      recorrerFlores(flores, 3)
+    si(quien = 1)
+      EnviarMensaje(flores, robot2)
+    sino 
+      RecibirMensaje(floresRecibidas, robot1)
+      total:= flores + floresRecibidas
+      EnviarMensaje(quien, robot5)
+      EnviarMensaje(total, robot5)    
+  fin
+  robot azul
+  variables
+    quien, papeles, papelesRecibidos, total: numero
+  comenzar
+    papeles:= 0
+    RecibirMensaje(quien, robot5)
+    derecha
+    si(quien = 3)
+      recorrerPapeles(papeles, 98)
+    sino
+      recorrerPapeles(papeles, 99)
+    si(quien = 3)
+      EnviarMensaje(papeles, robot4)
+    sino
+      RecibirMensaje(papelesRecibidos, robot3)
+      total:= papeles + papelesRecibidos
+      EnviarMensaje(quien, robot5)
+      EnviarMensaje(total, robot5)      
+  fin
+  robot coordinador
+  variables
+    max, equipoMax, cantTotal, quien: numero
+  comenzar
+    max:= 0
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    EnviarMensaje(4,robot4)
+    repetir 2
+      RecibirMensaje(quien, *)
+      si(quien = 2)
+        RecibirMensaje(cantTotal, robot2)
+      sino
+        RecibirMensaje(cantTotal, robot4)
+      si(cantTotal > max)
+        max:= cantTotal
+        equipoMax:= quien
+    si(equipoMax = 2)
+      Informar(1)
+    sino
+      Informar(2)   
+  fin
+variables
+  robot1: rojo
+  robot2: rojo
+  robot3: azul
+  robot4: azul
+  robot5: coordinador
+comenzar
+  AsignarArea(robot1, areaRobotRojo1)
+  AsignarArea(robot1, areaRobotRojo11)
+  AsignarArea(robot1, areaParcialmenteCompartida)
+  AsignarArea(robot2, areaRobotRojo2)
+  AsignarArea(robot2, areaRobotRojo22)
+  AsignarArea(robot2, areaParcialmenteCompartida)
+  AsignarArea(robot3, areaRobotAzul1)
+  AsignarArea(robot3, areaRobotAzul11)
+  AsignarArea(robot3, areaParcialmenteCompartida) 
+  AsignarArea(robot4, areaRobotAzul2)
+  AsignarArea(robot4, areaRobotAzul22)
+  AsignarArea(robot4, areaParcialmenteCompartida)
+  AsignarArea(robot5, areaCoordinador)
+  Iniciar(robot1, 2,1)
+  Iniciar(robot2, 3,1)
+  Iniciar(robot3, 1,98)
+  Iniciar(robot4, 1,99)
+  Iniciar(robot5, 1,1)
+fin  
