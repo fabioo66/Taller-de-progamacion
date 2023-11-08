@@ -1,31 +1,24 @@
 programa ejercicio3
 procesos
-  proceso juntarFlores(ES flores: numero)
+  proceso juntarFlor(ES flor: numero)
   comenzar
-    mientras(HayFlorEnLaEsquina)
+    si(HayFlorEnLaEsquina)
       tomarFlor
-      flores:= flores + 1
+      flor:= flor + 1
   fin
-  proceso juntarFloresLimite(ES flores: numero; E limite: numero)
-  comenzar
-    mientras((HayFlorEnLaEsquina) & (flores <> limite))
-      tomarFlor
-      flores:= flores + 1
-  fin 
   proceso tirarFlores
   comenzar
     mientras(HayFlorEnLaBolsa)
       depositarFlor
   fin
-  proceso recorrer
+  proceso recorrer(ES flor: numero)
   variables
-    pasos, flores: numero
+    pasos: numero
   comenzar
     pasos:= 0
-    flores:= 0
-    mientras(((pasos <> 5) & (flores <> 10)) & (PosAv < 100))
-      juntarFloresLimite(flores, 10)
-      si(flores <> 10)
+    mientras(((pasos <> 5) & (flor <> 10)) & (PosAv < 100))
+      juntarFlor(flor)
+      si(flor <> 10)
         mover
         pasos:= pasos + 1
   fin
@@ -36,6 +29,12 @@ procesos
     tirarFlores
     Pos(avInicial, caInicial)
     LiberarEsquina(10,10)
+  fin
+  proceso juntarFlores(ES flores: numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flores:= flores + 1
   fin
   proceso buscarFlores(ES flores: numero; E av: numero; E ca: numero)
   comenzar
@@ -53,16 +52,21 @@ areas
 robots
   robot recolector
   variables
-    avInicial, caInicial: numero
+    avInicial, caInicial, flor: numero
   comenzar
     derecha
+    flor:= 0
     mientras(PosAv < 100)
-      recorrer
-      avInicial:= PosAv
-      caInicial:= PosCa
-      depositar(avInicial, caInicial)
-      EnviarMensaje(1, robot3)
-    EnviarMensaje(0, robot3)
+      recorrer(flor)
+      si(PosAv < 100)
+        si(flor = 10)
+          flor:= 0
+        avInicial:= PosAv
+        caInicial:= PosCa
+        depositar(avInicial, caInicial)
+        EnviarMensaje(1, robot3)
+      sino
+        EnviarMensaje(0, robot3) 
   fin
   robot cosechador
   variables
