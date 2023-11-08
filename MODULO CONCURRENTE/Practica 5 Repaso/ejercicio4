@@ -45,14 +45,11 @@ robots
     flores:= 0
     RecibirMensaje(quien, robot4)
     RecibirMensaje(go, robot4)
-    RecibirMensaje(avRandom, robot4)
-    RecibirMensaje(caRandom, robot4)
     mientras(go <> F)
+      RecibirMensaje(avRandom, robot4)
+      RecibirMensaje(caRandom, robot4)
       etapa(flores, avInicial, caInicial, avRandom, caRandom)
       RecibirMensaje(go, robot4)
-      si(go <> F)
-        RecibirMensaje(avRandom, robot4)
-        RecibirMensaje(caRandom, robot4)
     depositar(avInicial, caInicial)
     EnviarMensaje(flores, robot4)  
   fin
