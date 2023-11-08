@@ -1,0 +1,100 @@
+programa ejercicio4
+procesos
+  proceso juntarFlores(ES flores: numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flores:= flores + 1
+  fin
+  proceso etapa(ES flores: numero; E avInicio: numero; E caInicio: numero; E avRandom: numero; E caRandom: numero)
+  comenzar
+    BloquearEsquina(avRandom, caRandom)
+    Pos(avRandom, caRandom)
+    juntarFlores(flores)
+    Pos(avInicio, caInicio)
+    LiberarEsquina(avRandom, caRandom)
+  fin
+  proceso tirarFlores
+  comenzar
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+  fin    
+areas
+  areaPC : AreaPC(40,40,60,60)
+  areaRecolector1 : AreaP(1,1,1,1)
+  areaRecolector2 : AreaP(2,1,2,1)
+  areaRecolector3 : AreaP(3,1,3,1)
+  areaFiscal : AreaP(4,1,4,1)
+robots
+  robot florero
+  variables
+    quien, avInicial, caInicial, flores, avRandom, caRandom: numero
+    go: boolean
+  comenzar
+    avInicial:= PosAv
+    caInicial:= PosCa
+    flores:= 0
+    RecibirMensaje(quien, robot4)
+    RecibirMensaje(go, robot4)
+    RecibirMensaje(avRandom, robot4)
+    RecibirMensaje(caRandom, robot4)
+    mientras(go <> F)
+      etapa(flores, avInicial, caInicial, avRandom, caRandom)
+      RecibirMensaje(go, robot4)
+      si(go <> F)
+        RecibirMensaje(avRandom, robot4)
+        RecibirMensaje(caRandom, robot4)
+    tirarFlores
+    EnviarMensaje(flores, robot4)  
+  fin
+  robot fiscal
+  variables
+    robotRandom, avRandom, caRandom, cant, total: numero
+  comenzar
+    total:= 0
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    repetir 8
+      Random(robotRandom,1,3)
+      Random(avRandom,40,60)
+      Random(caRandom,40,60)
+      si(robotRandom = 1)
+        EnviarMensaje(V, robot1)
+        EnviarMensaje(avRandom, robot1)
+        EnviarMensaje(caRandom, robot1)
+      sino
+        si(robotRandom = 2)
+          EnviarMensaje(V, robot2)
+          EnviarMensaje(avRandom, robot2)
+          EnviarMensaje(caRandom, robot2)
+        sino
+          EnviarMensaje(V, robot3)
+          EnviarMensaje(avRandom, robot3)
+          EnviarMensaje(caRandom, robot3)
+    EnviarMensaje(F, robot1)
+    EnviarMensaje(F, robot2)
+    EnviarMensaje(F, robot3)
+    repetir 3
+      RecibirMensaje(cant, *)
+      total:= total + cant
+    Informar(total)  
+  fin
+variables
+  robot1: florero
+  robot2: florero
+  robot3: florero
+  robot4: fiscal
+comenzar
+  AsignarArea(robot1, areaPC)
+  AsignarArea(robot1, areaRecolector1)
+  AsignarArea(robot2, areaPC)
+  AsignarArea(robot2, areaRecolector2)
+  AsignarArea(robot3, areaPC)
+  AsignarArea(robot3, areaRecolector3)
+  AsignarArea(robot4, areaFiscal)
+  Iniciar(robot1, 1,1)
+  Iniciar(robot2, 2,1)
+  Iniciar(robot3, 3,1)
+  Iniciar(robot4, 4,1)
+fin  
