@@ -1,69 +1,88 @@
 programa ejercicio4b
 procesos
-  proceso tirarFlor
+  proceso juntarFlor(ES hayFlor: boolean)
   comenzar
-    si(HayFlorEnLaBolsa)
+    si(HayFlorEnLaEsquina)
+      tomarFlor
+    sino
+      hayFlor:= F  
+  fin
+  proceso pickearYDepositar(E avInicio: numero; E caInicio: numero; ES hayFlor: boolean)
+  comenzar
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    juntarFlor(hayFlor)
+    Pos(avInicio, caInicio)
+    LiberarEsquina(10,10)
+    si(hayFlor = V)
+      BloquearEsquina(11,11)
+      Pos(11,11)
       depositarFlor
+      Pos(avInicio, caInicio)
+      LiberarEsquina(11,11)     
   fin
-areas
-  areaCompartida : AreaC(1,1,100,100)
-robots
-  robot recolector
-  variables
-    quien, estado, avInicio, caInicio: numero
+  proceso pickAllFlowers
   comenzar
-    estado:= 1
-    avInicio:= PosAv
-    caInicio:= PosCa
-    RecibirMensaje(quien, robot5)
-    mientras(estado = 1)
-      BloquearEsquina(10,10)
-      Pos(10,10)
-      si(HayFlorEnLaEsquina)
-        tomarFlor
-        Pos(avInicio, caInicio)
-        LiberarEsquina(10,10)  
-        BloquearEsquina(11,11)
-        Pos(11,11)
-        tirarFlor
-        Pos(avInicio, caInicio)
-        LiberarEsquina(11,11)
-      sino
-        estado:= 0
-        Pos(avInicio, caInicio)
-        LiberarEsquina(10,10)
-    EnviarMensaje(quien, robot5)  
-  fin
-  robot jefe
-  variables
-    numRobot: numero
-  comenzar
-    EnviarMensaje(1, robot1)
-    EnviarMensaje(2, robot2)
-    EnviarMensaje(3, robot3)
-    EnviarMensaje(4, robot4)
-    repetir 4
-      RecibirMensaje(numRobot, *)
-    Informar(numRobot)
-    BloquearEsquina(11,11)
     Pos(11,11)
     mientras(HayFlorEnLaEsquina)
       tomarFlor
-    Pos(1,1)
-    LiberarEsquina(11,11)         
+  fin
+areas
+  areaDeposito : AreaPC(10,10,10,10)
+  areaPublica : AreaC(11,11,11,11)
+  areaRecolector1 : AreaP(9,9,9,9)
+  areaRecolector2 : AreaP(9,10,9,10)
+  areaRecolector3 : AreaP(9,11,9,11)
+  areaRecolector4 : AreaP(9,12,9,12)
+  areaCoordinador : AreaP(1,1,1,1)
+robots
+  robot recolector
+  variables
+    quien, avInicio, caInicio: numero
+    hayFlor: boolean
+  comenzar
+    avInicio:= PosAv
+    caInicio:= PosCa
+    RecibirMensaje(quien, robot5)
+    hayFlor:= V
+    mientras(hayFlor = V)
+      pickearYDepositar(avInicio, caInicio, hayFlor)
+    EnviarMensaje(quien, robot5)
+  fin
+  robot coordinador
+  variables
+    quien: numero
+  comenzar
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    EnviarMensaje(4,robot4)
+    repetir 4
+      RecibirMensaje(quien, *)
+    Informar(quien)
+    pickAllFlowers  
   fin
 variables
   robot1: recolector
   robot2: recolector
   robot3: recolector
   robot4: recolector
-  robot5: jefe
+  robot5: coordinador
 comenzar
-  AsignarArea(robot1, areaCompartida)
-  AsignarArea(robot2, areaCompartida)
-  AsignarArea(robot3, areaCompartida)
-  AsignarArea(robot4, areaCompartida)
-  AsignarArea(robot5, areaCompartida)
+  AsignarArea(robot1, areaDeposito)
+  AsignarArea(robot1, areaPublica)
+  AsignarArea(robot1, areaRecolector1)
+  AsignarArea(robot2, areaDeposito)
+  AsignarArea(robot2, areaPublica)
+  AsignarArea(robot2, areaRecolector2)
+  AsignarArea(robot3, areaDeposito)
+  AsignarArea(robot3, areaPublica)
+  AsignarArea(robot3, areaRecolector3)
+  AsignarArea(robot4, areaDeposito)
+  AsignarArea(robot4, areaPublica)
+  AsignarArea(robot4, areaRecolector4)
+  AsignarArea(robot5, areaPublica)
+  AsignarArea(robot5, areaCoordinador)      
   Iniciar(robot1, 9,9)
   Iniciar(robot2, 9,10)
   Iniciar(robot3, 9,11)
