@@ -1,0 +1,78 @@
+programa ejercicio5
+procesos
+  proceso depositar(E papelesRandom: numero)
+  comenzar
+    BloquearEsquina(100,1)
+    Pos(100,1)
+    repetir papelesRandom
+      depositarPapel
+    Pos(13,1)
+    LiberarEsquina(100,1)  
+  fin
+  proceso pickearYDepositar(E avInicio: numero; E caInicio: numero; E papelesRandom: numero)
+  comenzar
+    repetir papelesRandom
+      BloquearEsquina(100,1)
+      Pos(100,1)
+      tomarPapel
+      Pos(avInicio, caInicio)
+      LiberarEsquina(100,1)
+      depositarPapel
+  fin
+areas 
+  areaCompartida : AreaC(100,1,100,1)
+  areaCliente1 : AreaP(10,1,10,1)
+  areaCliente2 : AreaP(11,1,11,1)
+  areaCliente3 : AreaP(12,1,12,1)
+  areaServidor : AreaP(13,1,13,1)
+robots
+  robot cliente
+  variables
+    quien, papelesRandom, avInicio, caInicio: numero
+  comenzar
+    avInicio:= PosAv
+    caInicio:= PosCa
+    RecibirMensaje(quien, robot4)
+    repetir 4
+      EnviarMensaje(quien, robot4)
+      RecibirMensaje(papelesRandom, robot4)
+      pickearYDepositar(avInicio, caInicio, papelesRandom)
+  fin
+  robot servidor
+  variables
+    quien, papelesRandom: numero
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    repetir 12
+      RecibirMensaje(quien, *)
+      Random(papelesRandom,1,5)
+      depositar(papelesRandom)
+      si(quien = 1)
+        EnviarMensaje(papelesRandom,robot1)
+      sino
+        si(quien = 2)
+          EnviarMensaje(papelesRandom, robot2)
+        sino
+          EnviarMensaje(papelesRandom, robot3)
+  fin 
+variables
+  robot1: cliente
+  robot2: cliente
+  robot3: cliente
+  robot4: servidor
+comenzar
+  AsignarArea(robot1, areaCompartida)
+  AsignarArea(robot1, areaCliente1)
+  AsignarArea(robot2, areaCompartida)
+  AsignarArea(robot2, areaCliente2)
+  AsignarArea(robot3, areaCompartida)
+  AsignarArea(robot3, areaCliente3)
+  AsignarArea(robot4, areaCompartida)
+  AsignarArea(robot4, areaServidor)
+  Iniciar(robot1, 10,1)
+  Iniciar(robot2, 11,1)
+  Iniciar(robot3, 12,1)
+  Iniciar(robot4, 13,1)
+fin  
