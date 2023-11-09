@@ -1,59 +1,92 @@
-programa ejercicio5  
+programa ejercicio5
+procesos
+  proceso juntarPapel(ES papeles: numero; ES hayPapel: boolean)
+  comenzar
+    si(HayPapelEnLaEsquina)
+      tomarPapel
+      papeles:= papeles + 1
+    sino
+      hayPapel:= F  
+  fin
+  proceso buscarPapel(ES papeles: numero; ES hayPapel: boolean; E avInicial: numero; E caInicial: numero)
+  comenzar
+    BloquearEsquina(11,11)
+    Pos(11,11)
+    juntarPapel(papeles, hayPapel)
+    Pos(avInicial, caInicial)
+    LiberarEsquina(11,11)
+  fin
 areas
-  areaJefe : AreaP(1,1,1,1)
-  areaParcialmenteCompartida : AreaPC(11,11,11,11)
-  areaRobot1 : AreaP(4,1,4,100)
-  areaRobot2 : AreaP(6,1,6,100)
-  areaRobot3 : AreaP(8,1,8,100)
-  areaRobot4 : AreaP(10,1,10,100)
+  areaDeposito : AreaPC(11,11,11,11)
+  areaPiloto1 : AreaP(4,1,4,100)
+  areaPiloto2 : AreaP(6,1,6,100)
+  areaPiloto3 : AreaP(8,1,8,100)
+  areaPiloto4 : AreaP(10,1,10,100)
+  areaCoordinador : AreaP(12,1,12,1)
 robots
   robot piloto
   variables
-    estado, avActual, caActual: numero
+    quien, avInicial, caInicial, papeles: numero
+    hayPapel: boolean
   comenzar
-    estado:= 1
-    mientras((estado = 1) & (PosCa<100))
-      avActual:= PosAv
-      caActual:= PosCa
-      BloquearEsquina(11,11)
-      Pos(11,11)
-      si(HayPapelEnLaEsquina)
-        tomarPapel
-      sino
-        estado:= 0
-      Pos(avActual, caActual)
-      LiberarEsquina(11,11)
-      si(estado = 1)
+    hayPapel:= V
+    papeles:= 0
+    RecibirMensaje(quien, robot5)
+    mientras((PosCa < 100) & (hayPapel = V))
+      avInicial:= PosAv
+      caInicial:= PosCa
+      buscarPapel(papeles, hayPapel, avInicial, caInicial)
+      si(hayPapel = V)
         depositarPapel
         mover
-    EnviarMensaje(V, robot5)  
+    EnviarMensaje(quien, robot5)  
+    EnviarMensaje(papeles, robot5)  
   fin
-  robot jefe
+  robot coordinador
   variables
-    ready: boolean
+    quien, max, ganador, cantPapeles: numero
   comenzar
+    max:= 0
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    EnviarMensaje(4,robot4)
     repetir 4
-      RecibirMensaje(ready, *)   
+      RecibirMensaje(quien, *)
+      si(quien = 1)
+        RecibirMensaje(cantPapeles, robot1)
+      sino
+        si(quien = 2)
+          RecibirMensaje(cantPapeles, robot2)
+        sino
+          si(quien = 3)
+            RecibirMensaje(cantPapeles, robot3)
+          sino
+            RecibirMensaje(cantPapeles, robot4)
+      si(cantPapeles > max)
+        max:= cantPapeles
+        ganador:= quien 
+    Informar(ganador)               
   fin
 variables
   robot1: piloto
   robot2: piloto
   robot3: piloto
   robot4: piloto
-  robot5: jefe
+  robot5: coordinador
 comenzar
-  AsignarArea(robot1, areaParcialmenteCompartida)
-  AsignarArea(robot1, areaRobot1)
-  AsignarArea(robot2, areaParcialmenteCompartida)
-  AsignarArea(robot2, areaRobot2)
-  AsignarArea(robot3, areaParcialmenteCompartida)
-  AsignarArea(robot3, areaRobot3)
-  AsignarArea(robot4, areaParcialmenteCompartida)
-  AsignarArea(robot4, areaRobot4)
-  AsignarArea(robot5, areaJefe)
-  Iniciar(robot1, 4,1)
-  Iniciar(robot2, 6,1)
-  Iniciar(robot3, 8,1)
-  Iniciar(robot4, 10,1)
-  Iniciar(robot5, 1,1)
-fin
+  AsignarArea(robot1, areaDeposito)
+  AsignarArea(robot1, areaPiloto1)
+  AsignarArea(robot2, areaDeposito)
+  AsignarArea(robot2, areaPiloto2)
+  AsignarArea(robot3, areaDeposito)
+  AsignarArea(robot3, areaPiloto3)
+  AsignarArea(robot4, areaDeposito)
+  AsignarArea(robot4, areaPiloto4)
+  AsignarArea(robot5, areaCoordinador)
+  Iniciar(robot1,4,1)
+  Iniciar(robot2,6,1)
+  Iniciar(robot3,8,1)
+  Iniciar(robot4,10,1)
+  Iniciar(robot5,12,1)
+fin  
