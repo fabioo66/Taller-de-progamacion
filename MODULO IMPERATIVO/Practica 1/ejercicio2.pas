@@ -1,59 +1,50 @@
-{El administrador de un edificio de oficinas cuenta, en papel, con la información del pago de
-las expensas de dichas oficinas.
-Implementar un programa que invoque a módulos para cada uno de los siguientes puntos:
-a. Genere un vector, sin orden, con a lo sumo las 300 oficinas que administra. De cada oficina
-se ingresa el código de identificación, DNI del propietario y valor de la expensa. La lectura
-finaliza cuando se ingresa el código de identificación -1, el cual no se procesa.
-b. Ordene el vector, aplicando el método de inserción, por código de identificación de la
-oficina.
-c. Ordene el vector aplicando el método de selección, por código de identificación de la oficina.}
-
 program ejercicio2;
 const
   dimf = 300;
 type
-  dig = 0..9; 
-  oficinas = record
-    codigo: dig;
-    DNI: dig;
+  oficina = record
+    codigo: integer;
+    dni: integer;
     valor: real;
   end;
-
-  vector = array[1..dimf] of oficinas;
-
-procedure leeroficina(var o: oficinas);
+  
+  vector = array[1..dimf] of oficina;
+  
+procedure leerOficina(var o:oficina);
 begin
+  writeln('Ingrese el codigo de identificacion');
   readln(o.codigo);
-  if(o.codigo = -1)then begin
-    readln(o.DNI);
+  if(o.codigo <> -1)then begin
+    writeln('Ingrese el DNI del propietario');
+    readln(o.dni);
+    writeln('Ingrese el valor de la expensa');
     readln(o.valor);
-  end;
+  end;  
 end;
 
-procedure cargarvector(var v:vector; var diml: integer);
+procedure cargarVector(var v: vector; var diml: integer);
 var
-  o: oficinas
+  o: oficina;
 begin
   diml:= 0;
-  leeroficina(o);
-  while(o.codigo = -1)do begin
+  leerOficina(o);
+  while(diml < dimf)and(o.codigo <> -1)do begin
     diml:= diml + 1;
-    v[diml]:= oficinas;
-    leeroficina(o);
+    v[diml]:= o;
   end;
 end;
 
 Procedure insercion(var v: Vector; dimL: integer);
 var 
   i, j: integer;
-  actual: oficinas;			
+  actual: oficina;			
 begin
   for i:= 2 to dimL do begin 
     actual:= v[i];
     j:= i-1; 
-    while (j > 0) y (v[j].codigo > actual.codigo)do begin
+    while (j > 0) and (v[j].codigo > actual.codigo)do begin
       v[j+1]:= v[j];
-      j:= j – 1;                  
+      j:= j - 1;                  
     end;  
     v[j+1]:= actual; 
   end;
@@ -62,25 +53,24 @@ end;
 procedure seleccion(var v: vector; var diml: integer);
 var 
   i, j, pos: integer; 
-  item: oficinas;	
+  o: oficina;	
 begin
-  for i:= 1 to (dimLog-1) do begin 
+  for i:= 1 to (diml-1) do begin 
     pos := i;
-    for j := i+1 to dimLog do
+    for j := i+1 to diml do
       if (v[j].codigo < v[pos].codigo)then 
         pos:= j;
-        item:= v[pos];   
+        o:= v[pos];   
         v[pos]:= v[i];   
-        v[i]:= item;
+        v[i]:= o;
     end;
 end;
 
-VAR
-  v: vector;
+var
   diml: integer;
+  v: vector;
 BEGIN
-  cargarvector(v, diml);
-  insercion(v, diml);
-  seleccion(v, diml);
+  cargarVector(v, diml);
+  insercion(v,diml);
+  seleccion(v,diml);	
 END.
-
