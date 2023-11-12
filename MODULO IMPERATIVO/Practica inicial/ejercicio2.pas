@@ -61,13 +61,17 @@ begin
   nue^.sig:= act;
 end;
 
-procedure inicializarListas(var v: vector);
+procedure cargarPropiedades(var v: vector);
 var
-  i: integer;
+  p: propiedad;
+  prop: propiedadTotal;
 begin
-  for i:= 1 to 5 do 
-    v[i]:= nil;
-end;
+  leerPropiedad(p, prop);
+  while(p.precioXMetro <> -1)do begin
+    agregarPropiedad(v[p.zona], prop);
+    leerPropiedad(p,prop);
+  end;
+end; 
 
 procedure cargarPropiedades(var v: vector);
 var
