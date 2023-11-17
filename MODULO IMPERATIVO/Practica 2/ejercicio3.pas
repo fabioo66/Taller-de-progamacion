@@ -13,7 +13,7 @@ type
     dato: integer;
     sig: lista;
   end;
-
+  
 procedure agregaradelante(var L:lista; n:integer);
 var
   nue: lista;
@@ -23,65 +23,69 @@ begin
   nue^.sig:= L;
   L:= nue;
 end; 
-
-procedure cargarlista(var L:lista);
+  
+procedure cargarLista(var L:lista);
 var
-  num: integer;
+  n: integer;
 begin
-  randomize;
-  num:= random(99)+1;
-  if(num <> 0) then begin
-    agregaradelante(L, num);
-    cargarlista(L);
+  n:= random(101);
+  if(n <> 0)then begin
+    agregaradelante(L,n);
+    cargarLista(L);
   end;
 end;
 
-procedure minimo(L: lista; var min: integer);
+procedure imprimirLista(L:lista);
 begin
-  min:= 9999;
+  if(L <> nil)then begin
+    imprimirLista(L^.sig);
+    writeln(L^.dato);
+  end;
+end;
+
+procedure minimo(L:lista; var min: integer);
+begin
   if(L <> nil)then begin
     if(L^.dato < min)then
       min:= L^.dato;
-    minimo(L^.sig, min);  
-  end;
-end;
+    minimo(L^.sig, min);
+  end;    
+end;  
 
-procedure maximo(L: lista; var max: integer);
+procedure maximo(L:lista; var max: integer);
 begin
-  max:= -9999;
   if(L <> nil)then begin
     if(L^.dato > max)then
       max:= L^.dato;
-    maximo(L^.sig, max);  
+    maximo(L^.sig, max);
+  end;    
+end;
+
+procedure esta(L: lista; num: integer; var encontre: boolean);
+begin
+  if(L <> nil)and(encontre = false)then begin
+    if(L^.dato = num)then
+      encontre:= true;
+    esta(L^.sig, num, encontre);
   end;
 end;
 
-procedure esta(L: lista);
-var
-  encontre: boolean;
-  num: integer;
-begin
-  encontre: false;
-  readln(num);
-  if(L <> nil)then begin
-    if(L^.dato = num)then
-      encontre: true;
-    if(encontre = true)then
-      writeln('el numero: ', num, 'se encuentra en la lista);
-    else
-      writeln('el numero: ', num, 'no se encuentra en la lista);  
-    esta(L^.sig);  
-  end;   
-end;
-
-var
+VAR
   L: lista;
-  min, max: integer;
-begin
-  L:= nil; 
-  cargarlista(L);
+  min, max, num: integer;
+  encontre: boolean;
+BEGIN
+  L:= nil;
+  randomize;
+  cargarLista(L);
+  imprimirLista(L);
+  min:= 9999;	
   minimo(L, min);
-  writeln(min);
-  maximo(L, max);
-  esta(L);
-end.  
+  max:= -9999;
+  maximo(L,max);
+  encontre:= false;
+  writeln('Ingrese un num');
+  readln(num);
+  esta(L, num, encontre);
+  writeln(encontre);	
+END.
