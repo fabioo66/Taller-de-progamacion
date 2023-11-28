@@ -15,6 +15,12 @@ type
     HD: arbol;
   end;
   
+  productoSinRubro = record
+    codigo: integer;
+    stock: integer;
+    precio: real;
+  end;  
+  
   vector = array[rangoRubro]of arbol;
   
 procedure leerProducto(var p:producto);
@@ -31,11 +37,18 @@ begin
   end;
 end;  
 
+procedure asignarProducto(var p1: productoSinRubro; p2: producto);
+begin
+	p1.codigo:= p2.codigo;
+	p1.stock:= p2.stock;
+    p1.precio:= p2.precio;
+end;
+
 procedure agregarProducto(var a:arbol; p: producto);
 begin
   if(a <> nil)then begin
     new(a);
-    a^.dato:= p;
+    asignarProducto(a^.dato, p);
     a^.HI:= nil;
     a^.HD:= nil
   end
@@ -66,15 +79,31 @@ end;
 
 procedure buscarCodigoArbol(a: arbol; codigo: integer; var encontre: boolean);
 begin
-  if(a <> nil)and(encontre = false)then begin
+  if(a <> nil)then begin
     if(a^.dato.codigo = codigo)then
       encontre:= true
-    else if(codigo > a^.dato.codigo)then
-      buscarCodigoArbol(a^.HD, codigo, encontre)
     else 
-      buscarCodigoArbol(a^.HI, codigo, encontre);
+		if(codigo > a^.dato.codigo)then
+			buscarCodigoArbol(a^.HD, codigo, encontre)
+		else 
+			buscarCodigoArbol(a^.HI, codigo, encontre);
   end;
 end;
+
+function buscarCodigoAbb(a: arbol; codigo: integer): boolean);
+begin
+	if(a = nil)then 
+		buscarCodigoAbb:= false
+	else
+		if(a^.dato.codigo = codigo)then
+			buscarCodigoAbb:= true
+		else 
+			if(codigo > a^.dato.codigo)then
+				buscarCodigoAbb:= buscarCodigoAbb(a^.HD, codigo)
+			else 
+				buscarCodigoAbb:= buscarCodigoAbb(a^.HI, codigo)
+end;
+
 
 procedure buscarCodigo(v: vector; rubro, codigo: integer; var encontre: boolean);
 begin
@@ -84,11 +113,23 @@ end;
 
 procedure retornarValores(a:arbol; var stock, codigo: integer);
 begin
-  if(a <> nil)then begin
-    retornarValores(a^.HD, stock, codigo);
-    stock:= a^.dato.stock;
-    codigo:= a^.dato.codigo;
-  end;
+  if(a <> nil)then 
+    retornarMaximo(a, stock,codigo);
+    else begin
+		stock:= -1;
+		codigo:= -1;
+	end;
+    
+end;
+
+procedure retornarMaximo(a:arbol; var stock, codigo: integer);
+begin
+	if(a^.HD <> nil) then
+		retornarMaximo(a^.HD, stock, codigo);
+	else begin
+		stock:= a^.dato.stock;
+		codigo:= a^.dato.codigo;
+	end;
 end; 
 
 procedure retornar(v:vector);
@@ -123,6 +164,7 @@ var
   cant, i: integer;
 begin
   for i:= 1 to 10 do begin
+    cant := 0;
     retornarCantidad(v[i], code1, code2, cant);
     writeln('La cantidad de productos en el rubro ', i, ' con codigos entre los dos valores ingresados es ', cant);
   end;
@@ -148,4 +190,3 @@ BEGIN
   readln(code2);
   retornar2(v, code1, code2);
 END.
-
