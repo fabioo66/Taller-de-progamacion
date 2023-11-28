@@ -41,7 +41,10 @@ begin
   readln(c.patente);
   if(c.patente <> -1)then begin
     writeln('Ingrese el anio de fabricacion del auto');
-    readln(c.anioFabricacion);
+    //readln(c.anioFabricacion);
+    c.anioFabricacion:=random(9)+2010;
+    //random()*0.156;
+    writeln(c.anioFabricacion);
     writeln('ingrese la marca del auto');
     readln(c.marca);
     writeln('Ingrese el modelo del auto');
@@ -51,7 +54,7 @@ end;
 
 procedure agregarAuto(var a:arbolAuto; c: auto);
 begin
-  if(a <> nil)then begin
+  if(a = nil)then begin
     new(a);
     a^.dato:= c;
     a^.HI:= nil;
@@ -75,7 +78,7 @@ end;
 
 procedure agregarXMarca(var a: arbolXMarca; c: auto);
 begin
-  if(a <> nil)then begin
+  if(a = nil)then begin
     new(a);
     a^.dato.marca:= c.marca;
     a^.dato.autos:= nil;
@@ -105,15 +108,13 @@ begin
   end;  
 end;
 
-procedure cantAutosBrand(a: arbolAuto; brand: string; var cant: integer; encontreBrand: boolean);
+procedure cantAutosBrand(a: arbolAuto; brand: string; var cant: integer);
 begin
-  if(a <> nil)and(encontreBrand = false)then begin
-    cantAutosBrand(a^.HI, brand,cant, encontreBrand);
-    if(a^.dato.marca = brand)then begin
+  if(a <> nil)then begin
+    cantAutosBrand(a^.HI, brand,cant);
+    if(a^.dato.marca = brand)then 
       cant:= cant + 1;
-      encontreBrand:= true;
-    end;
-    cantAutosBrand(a^.HD, brand, cant, encontreBrand);
+    cantAutosBrand(a^.HD, brand, cant);
   end;
 end;
 
@@ -129,18 +130,38 @@ begin
   recorrerLista:= cant;
 end;
 
-procedure cantAutosXMarca(a: arbolXMarca; marca: string; var cant: integer; encontreMarca: boolean);
+procedure cantAutosXMarca(a: arbolXMarca; marca: string; var cant: integer);
 begin
-  if(a <> nil)and(encontreMarca = false)then begin
-    if(a^.dato.marca = marca)then begin
-      cant:= recorrerLista(a^.dato.autos);
-      encontreMarca:= true
-    end  
+  if(a <> nil)then begin
+    if(a^.dato.marca = marca)then 
+      cant:= recorrerLista(a^.dato.autos)
     else if(marca > a^.dato.marca)then
-      cantAutosXMarca(a^.HD, marca, cant, encontreMarca)
+      cantAutosXMarca(a^.HD, marca, cant)
     else 
-      cantAutosXMarca(a^.HI, marca, cant, encontreMarca);
+      cantAutosXMarca(a^.HI, marca, cant);
   end;     
+end;
+
+{function contarMarca(a: arbolXMarca; marca: string): integer;
+begin
+	if ( a = nil) then
+		contarMarca:=0
+	else begin
+		if (a^.dato.marca = marca)
+			contarMarca:=recorrerLista(a^.dato.autos)
+		else if (a^.dato.marca < marca)
+			contarMarca:=contarMarca(a^.hd,marca)
+		else
+			contarMarca:=contarMarca(a^.hi,marca);
+	end;
+end;}
+
+procedure inicializarVector(var v: vector);
+var
+	i:integer;
+begin
+	for i:= 2010 to 2018 do
+		v[i]:=nil;
 end;
 
 procedure cargarVector(a:arbolAuto; var v:vector);
@@ -152,17 +173,15 @@ begin
   end;
 end;
 
-procedure buscarPatente(a:arbolAuto; patente: integer; encontre: boolean; var modelo: string);
+procedure buscarPatente(a:arbolAuto; patente: integer; var modelo: string);
 begin
-  if(a <> nil)and(encontre = false)then begin
-    if(patente = a^.dato.patente)then begin
-      encontre:= true;
+  if(a <> nil)then begin
+    if(patente = a^.dato.patente) then 
       modelo:= a^.dato.modelo
-    end  
     else if(patente > a^.dato.patente)then 
-      buscarPatente(a^.HD, patente, encontre, modelo)
+      buscarPatente(a^.HD, patente, modelo)
     else
-      buscarPatente(a^.HI, patente, encontre, modelo);
+      buscarPatente(a^.HI, patente, modelo);
   end;      
 end;
 
@@ -178,7 +197,7 @@ begin
   end;
 end;
 
-procedure buscarPatenteXMarca(a:arbolXMarca; patente: integer; encontre: boolean; var modelo: string);
+procedure buscarPatenteXMarca(a:arbolXMarca; patente: integer; var encontre: boolean; var modelo: string);
 begin
   if(a <> nil)and(encontre = false)then begin
     buscarPatenteEnLista(a^.dato.autos, patente, encontre, modelo);
@@ -193,27 +212,26 @@ VAR
   v: vector;
   brand, modelo: string;
   cant, patente: integer;
-  encontreBrand, encontre: boolean;
+  encontre: boolean;
 BEGIN
+	randomize;
   cargarArboles(a1,a2);
   writeln('Ingrese una marca');
   readln(brand);
   cant:= 0;
-  encontreBrand:= false;
-  cantAutosBrand(a1, brand, cant, encontreBrand);
+  cantAutosBrand(a1, brand, cant);
   writeln('La cantidad de autos de la misma marca es: ',cant);
   cant:= 0;
-  encontreBrand:= false;
-  cantAutosXMarca(a2, brand, cant, encontreBrand);
+  cantAutosXMarca(a2, brand, cant);
   writeln('La cantidad de autos de la misma marca es: ',cant);
+  inicializarVector(v);
   cargarVector(a1,v);
   writeln('Ingrese una patente de auto');
   readln(patente);
-  encontre:= false;
-  buscarPatente(a1,	patente, encontre, modelo);
+  buscarPatente(a1,	patente, modelo);
   writeln('el modelo del auto con la patente ', patente, ' es ', modelo);
   encontre:= false;
   buscarPatenteXMarca(a2, patente, encontre, modelo);
-  writeln('el modelo del auto con la patente ', patente, ' es ', modelo);
+  if(encontre)then
+    writeln('el modelo del auto con la patente ', patente, ' es ', modelo);
 END.
-
