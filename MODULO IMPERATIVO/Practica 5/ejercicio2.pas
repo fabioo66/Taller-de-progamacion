@@ -1,128 +1,123 @@
-program ejercicio2practica5;
+program ejercicio2;
 type
-  cadena20 = string[20];
-  arango = 2010..2018;
-  car = record
-    patente:integer;
-    anio:arango;
-    marca:cadena20;
-    modelo:cadena20;
-  end;
-  
-  arbol = ^nodo;
-  nodo = record
-    dato:car;
-    HI:arbol;
-    HD:arbol;
-  end;
-    
-  listaautos = ^nodoautos;
-  nodoautos = record
-    dato: car;
-    sig: listaautos;
-  end;
-  
-  carxbrand = record
-    marca: string;
-    lista: listaautos;
-  end;
-  
-  arbol2 = ^nodo2;
-  nodo2 = record
-    dato: carxbrand;
-    HI:arbol2;
-    HD:arbol2;
-  end;
-  
-  car2 = record
+  arango= 2010..2018;
+  auto = record
+    patente: integer;
+    anioFabricacion: arango;
     marca: string;
     modelo: string;
-    patente: integer;
-    anio: arango;
   end;
   
-  vector = array[arango] of listaautos;
+  arbolAuto = ^nodoAuto;
+  nodoAuto = record
+    dato: auto;
+    HI: arbolAuto;
+    HD: arbolAuto;
+  end;
   
-{a}procedure leerauto(var c:car);
+  lista = ^nodoLista;
+  nodoLista = record
+    dato: auto;
+    sig: lista;
+  end;
+  
+  autoXMarca = record
+    marca: string;
+    autos: lista;
+  end;
+  
+  arbolXMarca = ^nodoXMarca;
+  nodoXMarca = record
+    dato: autoXMarca;
+    HI: arbolXMarca;
+    HD: arbolXMarca;
+  end;
+  
+  vector = array[arango]of lista;
+  
+procedure leerAuto(var c: auto);
 begin
+  writeln('Ingrese la patente del auto');
   readln(c.patente);
-  if (c.patente <> -1) then begin
-    readln(c.anio);
+  if(c.patente <> -1)then begin
+    writeln('Ingrese el anio de fabricacion del auto');
+    readln(c.anioFabricacion);
+    writeln('ingrese la marca del auto');
     readln(c.marca);
+    writeln('Ingrese el modelo del auto');
     readln(c.modelo);
-  end;
+  end; 
 end;
-  
-{a}procedure agregarauto(var a:arbol; c:car);
+
+procedure agregarAuto(var a:arbolAuto; c: auto);
 begin
-  if (a = nil) then begin
+  if(a <> nil)then begin
     new(a);
     a^.dato:= c;
     a^.HI:= nil;
-    a^.HD:= nil;
+    a^.HD:= nil
   end
-  else if (c.patente <= a^.dato.patente) then
-    agregarauto(a^.HI,c)
+  else if(c.patente <= a^.dato.patente)then
+    agregarAuto(a^.HI, c)
   else
-    agregarauto(a^.HD,c);
+    agregarAuto(a^.HD, c);
 end;
 
-{a.ii}procedure agregaradelante(var L:listaautos; c: car);
+procedure agregarAdelante(var L: lista; c: auto);
 var
-  nue: listaautos;
+  nue: lista;
 begin
   new(nue);
   nue^.dato:= c;
   nue^.sig:= L;
   L:= nue;
 end;
- 
-{a.ii}procedure agregarmarca(var a2: arbol2; c: car);
-var
-  b: carxbrand;
-begin
-  if(a2 = nil)then begin
-    new(a2);
-    b.marca:= c.marca;
-    b.lista:= nil;
-    a2^.dato:= b;
-    agregaradelante(a2^.dato.lista, c);
-    a2^.HI:= nil;
-    a2^.HD:= nil;
-  end
-  else if(b.marca = a2^.dato.marca)then
-    agregaradelante(a2^.dato.lista, c)
-    else if(b.marca < a2^.dato.marca)then 
-      agregarmarca(a2^.HI, c)
-    else
-      agregarmarca(a2^.HD, c);
-end;
 
-{a}procedure cargararboles(var a:arbol; var a2: arbol2);
-var
-  c: car;
-begin
-  leerauto(c);
-  if (c.patente <> -1) then begin
-    agregarauto(a,c);
-    
-    agregarmarca(a2, c);
-    
-    cargararboles(a, a2);
-  end;
-end;
-
-{b}procedure cantcarsamebrand(a: arbol; brand: string; var cant: integer);
+procedure agregarXMarca(var a: arbolXMarca; c: auto);
 begin
   if(a <> nil)then begin
-    cantcarsamebrand(a, brand, cant);
-    if(a^.dato.marca = brand)then
+    new(a);
+    a^.dato.marca:= c.marca;
+    a^.dato.autos:= nil;
+    agregarAdelante(a^.dato.autos, c);
+    a^.HI:= nil;
+    a^.HD:= nil
+  end
+  else begin
+    if(c.marca = a^.dato.marca)then
+      agregarAdelante(a^.dato.autos, c)
+    else if(c.marca <= a^.dato.marca)then
+      agregarXMarca(a^.HI, c)
+    else
+      agregarXMarca(a^.HD, c);
+  end;         
+end;
+
+procedure cargarArboles(var a1: arbolAuto; var a2:arbolXMarca);
+var
+  c: auto;
+begin
+  leerAuto(c);
+  if(c.patente <> -1)then begin
+    agregarAuto(a1, c);
+    agregarXMarca(a2,c);
+    cargarArboles(a1,a2);
+  end;  
+end;
+
+procedure cantAutosBrand(a: arbolAuto; brand: string; var cant: integer; encontreBrand: boolean);
+begin
+  if(a <> nil)and(encontreBrand = false)then begin
+    cantAutosBrand(a^.HI, brand,cant, encontreBrand);
+    if(a^.dato.marca = brand)then begin
       cant:= cant + 1;
-    cantcarsamebrand(a, brand, cant);
+      encontreBrand:= true;
+    end;
+    cantAutosBrand(a^.HD, brand, cant, encontreBrand);
   end;
 end;
 
-{c}function recorrerlista(l: listaautos): integer;
+function recorrerLista(L: lista): integer;
 var
   cant: integer;
 begin
@@ -131,103 +126,94 @@ begin
     cant:= cant + 1;
     L:= L^.sig;
   end;
-  recorrerlista:= cant;
+  recorrerLista:= cant;
 end;
 
-{c}procedure cantcarsamebrand2(a2: arbol2; brand2: string; var cant2: integer);
+procedure cantAutosXMarca(a: arbolXMarca; marca: string; var cant: integer; encontreMarca: boolean);
 begin
-  if(a2 <> nil)then begin
-    if(a2^.dato.marca = brand2)then
-      cant2:= recorrerlista(a2^.dato.lista)
-    else if(brand2 > a2^.dato.marca)then
-      cantcarsamebrand2(a2^.HD,brand2,cant2)
-    else
-      cantcarsamebrand2(a2^.HI,brand2,cant2);  
-  end;        
+  if(a <> nil)and(encontreMarca = false)then begin
+    if(a^.dato.marca = marca)then begin
+      cant:= recorrerLista(a^.dato.autos);
+      encontreMarca:= true
+    end  
+    else if(marca > a^.dato.marca)then
+      cantAutosXMarca(a^.HD, marca, cant, encontreMarca)
+    else 
+      cantAutosXMarca(a^.HI, marca, cant, encontreMarca);
+  end;     
 end;
 
-{d}procedure inicializarvector(var v:vector);
-var
-  i:integer;
-begin
-  for i:= 2010 to 2018 do
-    v[i]:= nil;
-end;
-
-{d}procedure nuevaestructura(a: arbol; var v: vector);
+procedure cargarVector(a:arbolAuto; var v:vector);
 begin
   if(a <> nil)then begin
-    nuevaestructura(a^.HI, v);
-    agregaradelante(v[a^.dato.anio], a^.dato);
-    nuevaestructura(a^.HD, v);
+    agregarAdelante(v[a^.dato.anioFabricacion], a^.dato);
+    cargarVector(a^.HI, v);
+    cargarVector(a^.HD, v);
   end;
 end;
 
-{e}procedure buscarpatente(a: arbol; patente: integer; var modelo: string);
+procedure buscarPatente(a:arbolAuto; patente: integer; encontre: boolean; var modelo: string);
 begin
-  if(a <> nil)then begin
-    if(a^.dato.patente = patente)then
+  if(a <> nil)and(encontre = false)then begin
+    if(patente = a^.dato.patente)then begin
+      encontre:= true;
       modelo:= a^.dato.modelo
-    else if(patente > a^.dato.patente)then
-      buscarpatente(a^.HD, patente, modelo)
+    end  
+    else if(patente > a^.dato.patente)then 
+      buscarPatente(a^.HD, patente, encontre, modelo)
     else
-      buscarpatente(a^.HI, patente, modelo)
-  end;
+      buscarPatente(a^.HI, patente, encontre, modelo);
+  end;      
 end;
 
-{f}procedure recorrerlista(l: listaautos; patente2: integer; var modelo2: string; var encontre: boolean);
+procedure buscarPatenteEnLista(L: lista; patente: integer; var encontre: boolean; var modelo:string);
 begin
   encontre:= false;
   while(L <> nil)and(encontre = false)do begin
-    if(L^.dato.patente = patente2)then begin 
-      modelo2:= L^.dato.modelo;
+    if(patente = L^.dato.patente)then begin
       encontre:= true;
-    end;
+      modelo:= L^.dato.modelo;
+    end;  
     L:= L^.sig;
   end;
 end;
 
-{f}procedure recorrerarbol2(a2: arbol2; patente2: integer; var encontre: boolean);
-var
-  modelo2: string;
+procedure buscarPatenteXMarca(a:arbolXMarca; patente: integer; encontre: boolean; var modelo: string);
 begin
-  if(a2 <> nil)and(encontre = false)then begin
-    recorrerarbol2(a2^.HI,patente2, encontre);
-    recorrerlista(a2^.dato.lista, patente2, modelo2, encontre);
-    if(encontre = true)then
-      writeln('El modelo del auto de dicha patente es: ', modelo2);
-    recorrerarbol2(a2^.HD,patente2, encontre)
-  end
-  else
-    writeln('No se encontro un auto con esa misma patente');
+  if(a <> nil)and(encontre = false)then begin
+    buscarPatenteEnLista(a^.dato.autos, patente, encontre, modelo);
+    buscarPatenteXMarca(a^.HI, patente, encontre, modelo);
+    buscarPatenteXMarca(a^.HD, patente, encontre, modelo);
+  end;  
 end;
 
-var
-  a:arbol;
-  a2: arbol2;
-  cant, cant2, patente, patente2: integer;
-  brand, brand2, modelo: string;
-  v: vector; 
-  encontre: boolean;
-begin
-  cargararboles(a, a2);
-  writeln('Ingrese una marca para chequear la cantidad de autos de dicha marca que posee la agencia');
+VAR
+  a1: arbolAuto;
+  a2: arbolXMarca;
+  v: vector;
+  brand, modelo: string;
+  cant, patente: integer;
+  encontreBrand, encontre: boolean;
+BEGIN
+  cargarArboles(a1,a2);
+  writeln('Ingrese una marca');
   readln(brand);
   cant:= 0;
-  cantcarsamebrand(a, brand, cant);
-  writeln('La cantidad de autos de dicha marca que posee la agencia es: ', cant);
-  writeln('Ingrese una marca para chequear la cantidad de autos de dicha marca que posee la agencia');
-  readln(brand2);
-  cant2:= 0;
-  cantcarsamebrand2(a2, brand2, cant2);
-  writeln('La cantidad de autos de dicha marca que posee la agencia es: ', cant2);
-  inicializarvector(v);
-  nuevaestructura(a,v);
-  writeln('Ingrese una patente para ver a que modelo de auto coincide');
+  encontreBrand:= false;
+  cantAutosBrand(a1, brand, cant, encontreBrand);
+  writeln('La cantidad de autos de la misma marca es: ',cant);
+  cant:= 0;
+  encontreBrand:= false;
+  cantAutosXMarca(a2, brand, cant, encontreBrand);
+  writeln('La cantidad de autos de la misma marca es: ',cant);
+  cargarVector(a1,v);
+  writeln('Ingrese una patente de auto');
   readln(patente);
-  buscarpatente(a,patente,modelo);
-  writeln('El modelo del auto que coincide con esa patente es: ', modelo);
-  writeln('Ingrese una patente para ver a que modelo de auto coincide');
-  readln(patente2);
-  recorrerarbol2(a2,patente2, encontre);
-end.
+  encontre:= false;
+  buscarPatente(a1,	patente, encontre, modelo);
+  writeln('el modelo del auto con la patente ', patente, ' es ', modelo);
+  encontre:= false;
+  buscarPatenteXMarca(a2, patente, encontre, modelo);
+  writeln('el modelo del auto con la patente ', patente, ' es ', modelo);
+END.
+
