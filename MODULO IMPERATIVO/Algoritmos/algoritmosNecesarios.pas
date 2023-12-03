@@ -149,6 +149,34 @@ begin
       minimoDevolverNodo:= minimoDevolverNodo(a^.HI);
 end;
 
+//informar la cantidad de datos menores a un dato ingresado por teclado
+
+function cantidadMenor(a:arbol; codigo:integer):integer;
+begin
+  if(a = nil)then
+    cantidadMenor:=0
+  else begin
+    if(codigo < a^.dato.codigo)then
+      cantidadMenor:=cantidadMenor(a^.hi,codigo)
+    else
+      cantidadMenor:=cantidadMenor(a^.hi,codigo) + 1 + cantidadMenor(a^.hd,codigo);
+  end;
+end;
+
+////informar la cantidad de datos mayores a un dato ingresado por teclado
+
+function cantidadMayor(a:arbol; codigo:integer):integer;
+begin
+  if(a = nil)then
+    cantidadMayor:=0
+  else begin
+    if(codigo > a^.dato.codigo)then
+      cantidadMayor:=cantidadMenor(a^.HD,codigo)
+    else
+      cantidadMayor:=cantidadMayor(a^.HD,codigo) + 1 + cantidadMayor(a^.HI,codigo);
+  end;
+end;
+
 //buscar un elemento de forma eficiente
 
 function buscarElemento(a:arbol; codigo: integer): boolean;
