@@ -1,110 +1,121 @@
-program ejercicio2;
-type
-  zrango = 1..5;
-  propiedad = record
-    zona: zrango;
-    codigo: integer;
-    tipo: string;
-    cantMetros: integer;
-    precioXMetro: real;
-  end;
-  
-  propiedadTotal = record
-    codigo: integer;
-    tipo: string;
-    precioTotal: real;
-  end;
-  
-  listaPropiedades = ^nodoPropiedades;
-  nodoPropiedades = record
-    dato: propiedadTotal;
-    sig: listaPropiedades;
-  end;
-  
-  vector = array[zrango] of listaPropiedades;
-  
-procedure leerPropiedad(var p: propiedad; var prop: propiedadTotal);
+{Implementar un programa que procese información de propiedades que están a la venta 
+en una inmobiliaria.  Se pide: a)  Implementar  un  módulo  para  almacenar  en  una  estructura  adecuada,  las  propiedades 
+agrupadas por zona. Las propiedades de una misma zona deben quedar almacenadas 
+ordenadas por tipo de propiedad. Para cada propiedad debe almacenarse el código, el tipo de 
+propiedad y el precio total. De cada propiedad se lee: zona (1 a 5), código de propiedad, tipo 
+de  propiedad,  cantidad  de  metros  cuadrados  y  precio  del  metro  cuadrado.  La  lectura  finaliza 
+cuando se ingresa el precio del metro cuadrado -1. b)  Implementar  un  módulo  que  reciba  la  estructura  generada  en  a),  un  número  de  zona  y  un  tipo  de 
+propiedad y retorne los códigos de las propiedades de la zona recibida y del tipo recibido.}
+
+program ejercicio1;
+type 
+    propiedad = record
+        zona: zRango;
+        codigo: integer;
+        tipo: string;
+        metrosCuadrados: integer;
+        precioMetroCuadrado: real;
+    end;
+
+    propiedadGod = record 
+        codigo: integer;
+        tipo: string;
+        precioTotal: real;
+    end;
+
+    lista = ^nodo;
+    nodo = record
+        dato: propiedad;
+        sig: lista;
+    end;
+
+    vector = array [1..5] of lista;
+
+procedure inicializarVector(var v: vector);
+var
+    i: integer;
 begin
-  writeln('Ingrese el precio de los metros cuadrados');
-  readln(p.precioXMetro);
-  if(p.precioXMetro <> -1)then begin
-    writeln('Ingrese la zona de la propiedad');
-    readln(p.zona);
-    writeln('Ingrese el codigo de la propiedad');
-    readln(p.codigo);
-    writeln('Ingrese el tipo de propiedad');
-    readln(p.tipo);
-    writeln('Ingrese la cantidad de metros cuadrados');
-    readln(p.cantMetros);
-    prop.codigo:= p.codigo;
-    prop.tipo:= p.tipo;
-    prop.precioTotal:= p.cantMetros * p.precioXMetro;
-  end;
+    for i := 1 to 5 do
+        v[i] := nil;
 end;
 
-procedure agregarPropiedad(var L: listaPropiedades; prop: propiedadTotal);
-var
-  nue,act,ant: listaPropiedades;
+procedure leerPropiedad(var p: propiedad);
 begin
-  new(nue);
-  nue^.dato:= prop;
-  act:= L;
-  ant:= L;
-  while(L <> nil) and (prop.tipo > L^.dato.tipo)do begin
-    ant:= act;
-    act:= act^.sig;
-  end;
-  if(act = ant)then
-    L:= nue
-  else
-    ant^.sig:= nue;
-  nue^.sig:= act;
+    writeln('Ingrese el precio del metro cuadrado');
+    readln(p.precioMetroCuadrado);
+    if (p.precioMetroCuadrado <> -1) then begin
+        writeln('Ingrese el codigo de la propiedad');
+        readln(p.codigo);
+        writeln('Ingrese el tipo de propiedad');
+        readln(p.tipo);
+        writeln('Ingrese la cantidad de metros cuadrados');
+        readln(p.metrosCuadrados);
+        writeln('Ingrese la zona de la propiedad');
+        readln(p.zona);
+    end;
 end;
 
-procedure cargarPropiedades(var v: vector);
+procedure cargarRegistro(var pGod: propiedadGod; p: propiedad);
+begin
+    pGod.codigo := p.codigo;
+    pGod.tipo := p.tipo;
+    pGod.precioTotal := p.metrosCuadrados * p.precioMetroCuadrado;
+end;
+
+procedure insertarOrdenado(var l: lista; pGod: propiedadGod);
 var
-  p: propiedad;
-  prop: propiedadTotal;
+    ant, act, nue: lista;
 begin
-  leerPropiedad(p, prop);
-  while(p.precioXMetro <> -1)do begin
-    agregarPropiedad(v[p.zona], prop);
-    leerPropiedad(p,prop);
-  end;
-end; 
+    new(nue);
+    nue^.dato := pGod;
+    act := l;
+    while (act <> nil) and (act^.dato.tipo < pGod.tipo) do begin
+        ant := act;
+        act := act^.sig;
+    end;
+    if (act = ant) then
+        l := nue
+    else
+        ant^.sig := nue;
+    nue^.sig := act;
+end;
 
-procedure cargarPropiedades(var v: vector);
+procedure cargarLista(var v: vector);
 var
-  p: propiedad;
-  prop: propiedadTotal;
+    p: propiedad;
+    pGod: propiedadGod;
 begin
-  leerPropiedad(p, prop);
-  while(p.precioXMetro <> -1)do begin
-    agregarPropiedad(v[p.zona], prop);
-    leerPropiedad(p,prop);
-  end;
-end;    
+    leerPropiedad(p);
+    cargarRegistro(pGod, p);
+    while (p.precioMetroCuadrado <> -1) do begin
+        agregarAdelante(v[p.zona], pGod);
+        leerPropiedad(p);
+        cargarRegistro(pGod, p);
+    end;
+end;
 
-procedure retornarCodigos(v: vector; numZona: integer; tipo: string);
+procedure procesar(v: vector; zona: zRango; tipo: string);
+var
+    aux: lista;
 begin
-  while(v[numZona] <> nil)do begin
-    if(v[numZona]^.dato.tipo = tipo)then
-      writeln('La propiedad con codigo ', v[numZona]^.dato.codigo, ' es de la zona ', numZona, ' y del tipo ', tipo);
-    v[numZona]:= v[numZona]^.sig;
-  end;   
-end;   
-    
-VAR
-  v: vector;
-  zona: integer;
-  tipo: string; 
-BEGIN
-  inicializarListas(v);
-  cargarPropiedades(v);
-  writeln('Ingrese zona a buscar');
-  readln(zona);
-  writeln('Ingrese tipo a buscar');
-  readln(tipo);
-  retornarCodigos(v, zona, tipo);
-END.
+    aux := v[zona];
+    while (aux <> nil) do begin
+        if (aux^.dato.tipo = tipo) then
+            writeln('Codigo de la propiedad: ', aux^.dato.codigo);
+        aux := aux^.sig;
+    end;
+end;
 
+var
+    v: vector;
+    zona: zRango;
+    tipo: string;
+begin
+    inicializarVector(v);
+    cargarLista(v);
+    writeln('Ingrese la zona a buscar');
+    readln(zona);
+    writeln('Ingrese el tipo de propiedad a buscar');
+    readln(tipo);
+    procesar(v, zona, tipo);
+end.

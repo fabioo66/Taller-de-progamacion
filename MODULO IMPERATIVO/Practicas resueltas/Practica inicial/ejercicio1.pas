@@ -1,95 +1,100 @@
+{Implementar  un  programa  que  procese la información  de los  alumnos  de  la  Facultad  de 
+Informática.  a)  Implementar  un  módulo  que  lea  y  retorne,  en  una  estructura  adecuada,  la  información  de 
+todos  los  alumnos.  De  cada  alumno  se  lee  su  apellido,  número  de  alumno,  año  de  ingreso, 
+cantidad de materias aprobadas (a lo sumo 36) y nota obtenida (sin contar los aplazos) en cada 
+una  de  las  materias  aprobadas.  La  lectura  finaliza  cuando  se  ingresa  el  número  de  alumno 
+11111, el cual debe procesarse. b)  Implementar  un  módulo  que  reciba  la  estructura  generada  en  el inciso  a)  y  retorne  número 
+de alumno y promedio de cada alumno. c) Analizar: ¿qué cambios requieren los puntos a y b, si no se sabe de antemano la cantidad de 
+materias  aprobadas  de  cada  alumno,  y  si  además  se  desean  registrar  los  aplazos?  ¿cómo 
+puede diseñarse una solución modularizada que requiera la menor cantidad de cambios?}
+
 program ejercicio1;
+const
+    cantMaterias = 36;
 type
-  rangoMaterias = 1..36;
-  notaSinAplazos = 4..10;
-  
-  vectorMaterias = array [rangoMaterias] of notaSinAplazos;
-  
-  alumno = record
-    apellido: string;
-    numAlu: integer;
-    anioIngreso: integer;
-    materiasAprobadas: rangoMaterias;
-    notas: vectorMaterias;
-  end;
-  
-  listaAlumnos = ^nodoAlumnos;
-  nodoAlumnos = record
-    dato: alumno;
-    sig: listaAlumnos;
-  end;
-  
-procedure cargarVector(var v: vectorMaterias; diml: integer);
+    alumno = record
+        apellido: string;
+        numAlumno: integer;
+        anioIngreso: integer;
+        cantMateriasAprobadas: integer;
+        notas: vector;
+    end;
+
+    vector = array [1..cantMaterias] of integer;
+
+    lista = ^nodo;
+    nodo = record
+        dato: alumno;
+        sig: lista;
+    end;
+
+procedure leerAlumno(var a: alumno);
 var
-  i: integer;
+    i: integer;
 begin
-  for i:= 1 to diml do begin
-    writeln('Ingrese la nota de la materia ', i);
-    readln(v[i]);
-  end;  
-end;
-  
-procedure leerAlumno(var a:alumno);
-begin
-  writeln('Ingrese el apellido');
-  readln(a.apellido);
-  writeln('Ingrese el numero de alumno');
-  readln(a.numAlu);
-  writeln('Ingrese el año de ingreso');
-  readln(a.anioIngreso);
-  writeln('Ingrese la cantidad de materias aprobadas');
-  readln(a.materiasAprobadas);
-  cargarVector(a.notas, a.materiasAprobadas);
+    writeln('Ingrese el apellido del alumno');
+    readln(a.apellido);
+    writeln('Ingrese el numero de alumno');
+    readln(a.numAlumno);
+    writeln('Ingrese el anio de ingreso');
+    readln(a.anioIngreso);
+    writeln('Ingrese la cantidad de materias aprobadas');
+    readln(a.cantMateriasAprobadas);
+    for i := 1 to a.cantMateriasAprobadas do begin
+        writeln('Ingrese la nota de la materia ', i);
+        readln(a.notas[i]);
+    end;
 end;
 
-procedure agregarAtras(var L, ult: listaAlumnos; a: alumno);
+procedure agregarAdelante(var l: lista; a: alumno);
 var
-  nue: listaAlumnos;
+    nuevo: lista;
 begin
-  new(nue);
-  nue^.dato:= a;
-  nue^.sig:= nil;
-  if(L = nil)then
-    L:= nue
-  else
-    ult^.sig:= nue;
-  ult:= nue  
+    new(nuevo);
+    nuevo^.dato := a;
+    nuevo^.sig := l;
+    l := nuevo;
 end;
 
-procedure cargarLista(var L: listaAlumnos);
-var
-  a: alumno;
-  ult: listaAlumnos;
+procedure cargarLista(var l: lista);
+var     
+    a: alumno;
 begin
-  repeat
-    leerAlumno(a);
-    agregarAtras(L, ult, a);
-  until(a.numAlu = 11111)  
+    repeat
+        leerAlumno(a);
+        agregarAdelante(l, a);
+    until (a.numAlumno = 11111);
 end;
 
-function promedio(cantidadMaterias: integer; notas: vectorMaterias): real;
+function promedio(v: vector; cantMateriasAprobadas: integer): real;
 var
-  suma, i: integer;
+    i, suma: integer;
 begin
-  suma:= 0;
-  for i:= 1 to cantidadMaterias do
-    suma:= suma + notas[i];
-  promedio:= suma/cantidadMaterias;
+    suma := 0;
+    for i := 1 to cantMateriasAprobadas do
+        suma := suma + v[i];
+    promedio := suma / cantMateriasAprobadas;
 end;
 
-procedure recorrerLista(L: listaAlumnos);
+procedure procesar(l: lista);
+var 
 begin
-  while(L <> nil)do begin
-    writeln('El promedio del alumno ', L^.dato.numAlu, ' es ', promedio(L^.dato.materiasAprobadas, L^.dato.notas):0:2);
-    L:= L^.sig;
-  end;  
-end;  
+    while (l <> nil) do begin
+        writeln('Numero de alumno: ', l^.dato.numAlumno, ' Promedio: ', promedio(l^.dato.notas, l^.dato.cantMateriasAprobadas):0:2);
+        l := l^.sig;
+    end;
+end;
 
 var
-  L: listaAlumnos;
-BEGIN
-  L:= nil;
-  cargarLista(L);
-  recorrerLista(L);	
-END.
+    l: lista;
+begin
+    l := nil;
+    cargarLista(l);
+    procesar(l);
+end.
 
+{c) Analizar: ¿qué cambios requieren los puntos a y b, si no se sabe de antemano la cantidad de 
+materias  aprobadas  de  cada  alumno,  y  si  además  se  desean  registrar  los  aplazos?  ¿cómo 
+puede diseñarse una solución modularizada que requiera la menor cantidad de cambios?}
+
+{Si no se sabe de antemano la cantidad de materias aprobadas de cada alumno, se puede cambiar la estructura de datos tipo vector por un lista de enteros, y se puede agregar un campo en la estructura alumno que indique la cantidad de materias aprobadas.}
