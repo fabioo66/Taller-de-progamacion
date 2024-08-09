@@ -1,4 +1,4 @@
-{4.- Una librería requiere el procesamiento de la información de sus productos. De cada
+{Una librería requiere el procesamiento de la información de sus productos. De cada
 producto se conoce el código del producto, código de rubro (del 1 al 8) y precio.
 Implementar un programa que invoque a módulos para cada uno de los siguientes puntos:
 a. Lea los datos de los productos y los almacene ordenados por código de producto y
@@ -15,131 +15,150 @@ f. Calcule el promedio de los precios del vector resultante del punto d).}
 
 program ejercicio4;
 const
-  dimf = 30;
+    dimF = 30;
 type
-  crango = 1..8;
-  productos = record
-    codigoproducto: integer;
-    codigorubro: crango;
-    precio: real;
-  end;  
-  
-  lista = ^nodo;
-  nodo = record
-    dato: productos;
-    sig: lista;
-  end;
-  
-  vector1 = array[crango]of lista;
-  vector2 = array[1..dimf]of productos;
-  
-procedure leerproducto(var p:productos);
-begin
-  readln(p.precio);
-  if(p.precio <> 0)then begin
-    readln(p.codigoproducto);
-    readln(p.codigorubro);
-  end;
-end;
+    cRango = 1..8;
 
-procedure insertarordenado(var L: lista; p: productos);
-var
-  nue, act, ant: lista;
-begin
-  new(nue);
-  act:= L;
-  ant:= L;
-  while(act <> nil) and (p.codigorubro > act^.dato.codigorubro)do begin
-    ant:= act;
-    act:= act^.sig;
-  end;
-  if(ant = act)then
-    L:= nue
-  else
-    ant^.sig:= nue;
-  nue^.sig:= act
-end;
-
-procedure cargarvector(var v1: vector1);
-var
-  p: productos;
-begin
-  leerproducto(p);
-  while(p.precio <> 0)do begin
-    insertarordenado(v1[p.codigorubro], p);
-    leerproducto(p);
-  end; 
-end;     
-
-procedure informarcodes(v1:vector1);
-var
-  i: integer;
-begin
-  for i:= 1 to 8 do begin
-    while(v1[i] <> nil)do begin
-      writeln(v1[i]^.dato.codigoproducto);
-      v1[i]:= v1[i]^.sig;
+    producto = record
+        codigo: integer;
+        rubro: cRango;
+        precio: real;
     end;
-  end;
-end; 
 
-procedure cargarvector(var v2: vector2; var diml: integer; v1: vector1);  
-begin
-  diml:= 0;
-  while(v1[3] <> nil) or (diml < dimf)do begin
-    diml:= diml + 1;
-    v2[diml]:= v1[3]^.dato;
-    v1[3]:= v1[3]^.sig;
-  end;
-end;
-
-procedure insercion(var v2: vector2; var diml: integer);
-var
-  i, j: integer;
-  actual: productos;
-begin
-  for i:= 2 to diml do begin
-    actual:= v2[i];
-    j:= i-1;
-    while(j > 0) and (v2[j].precio > actual.precio) do begin
-      v2[j+1]:= v2[j];
-      j:= j-1; 
+    lista = ^nodo;
+    nodo = record
+        dato: producto;
+        sig: lista;
     end;
-    v2[j+1]:= actual;
-  end;  
+
+    vectorRubros = array [cRango] of lista;
+    vectorProductos = array [1..dimF] of producto;
+
+procedure inicializarListas(var v: vector);
+var
+    i: integer;
+begin
+    for i := 1 to dimF do
+        v[i] := nil;
 end;
 
-procedure informarvector2(v2: vector2; diml: integer);
-var
-  i: integer;
+procedure leerProducto(var p: producto);
 begin
-  for i:= 1 to diml do 
-    writeln(v2[i].precio);
+    writeln('Ingrese el precio');
+    readln(p.precio);
+    if (p.precio <> 0) then begin
+        writeln('Ingrese el codigo del producto');
+        readln(p.codigo);
+        writeln('Ingrese el codigo de rubro');
+        readln(p.rubro);
+    end;
 end;
 
-function promedio(v2: vector2; diml: integer): real;
+procedure insertarOrdenado(var l: lista; p: producto);
 var
-  suma: real;
-  i: integer;
+    ant, act, nuevo: lista;
 begin
-  suma:= 0;
-  for i:= 1 to diml do begin
-    suma:= suma + v2[i].precio;
-  end;
-  promedio:= (suma/diml);  
+    new(nuevo);
+    nuevo^.dato := p;
+    act := l;
+    while ((act <> nil) and (act^.dato.codigo < p.codigo)) do begin
+        ant := act;
+        act := act^.sig;
+    end;
+    if (ant = act) then
+        l := nuevo
+    else
+        ant^.sig := nuevo;
+    nuevo^.sig := act;
+end;
+
+procedure cargarVector(var v: vectorRubros);
+var
+    p: producto;
+begin
+    leerProducto(p);
+    while (p.precio <> 0) do begin
+        insertarOrdenado(v[p.rubro], p);
+        leerProducto(p);
+    end;
+end;
+
+procedure imprimirRubros(var v: vectorRubros);
+var
+    i: integer;
+    aux: lista;
+begin
+    for i := 1 to 8 do begin
+        aux := v[i];
+        writeln('Rubro ', i);
+        while (aux <> nil) do begin
+            writeln('Codigo: ', aux^.dato.codigo);
+            aux := aux^.sig;
+        end;
+    end;
+end;
+
+procedure cargarVectorProductos(v: vectorRubros; var vP: vectorProductos; var dimL: integer);
+var
+    i: integer;
+    aux: lista;
+begin
+    dimL := 0;
+    for i := 1 to dimF do begin
+        aux := v[3];
+        while ((aux <> nil) and (dimL < dimF)) do begin
+            dimL := dimL + 1;
+            vP[dimL] := aux^.dato;
+            aux := aux^.sig;
+        end;
+    end;
+end;
+
+procedure ordenarVectorInsercion(var v: vectorProductos; dimL: integer);
+var
+    i, j: integer;
+    actual: producto;
+begin
+    for i := 2 to dimL do begin
+        actual := v[i];
+        j := i - 1;
+        while ((j > 0) and (v[j].precio > actual.precio)) do begin
+            v[j+1] := v[j];
+            j := j - 1;
+        end;
+        v[j+1] := actual;
+    end;
+end;
+
+procedure imprimirVector(v: vectorProductos; dimL: integer);
+var
+    i: integer;
+begin
+    for i := 1 to dimL do
+        writeln('Precio: ', v[i].precio:4:2);
+end;
+
+function promedioVector(v: vectorProductos; dimL: integer): real;
+var
+    i: integer;
+    suma: real;
+begin
+    suma := 0;
+    for i := 1 to dimL do
+        suma := suma + v[i].precio;
+    promedioVector := suma / dimL;
 end;
 
 var
-  v1: vector1;
-  L: lista;
-  v2: vector2;
-  diml: integer;
+    vRubros: vectorRubros;
+    vProductos: vectorProductos;
+    dimL: integer;
 begin
-  cargarvector(v1);
-  L:= nil;
-  informarcodes(v1);
-  cargarvector(v2, diml, v1);
-  insercion(v2, diml);
-  informarvector2(v2, diml);
-  writeln('el promedio de los precios es: ', promedio(v2, diml));
+    inicializarListas(vRubros);
+    cargarVector(vRubros);
+    imprimirRubros(vRubros);
+    cargarVectorProductos(vRubros, vProductos, dimL);
+    ordenarVectorInsercion(vProductos, dimL);
+    imprimirVector(vProductos, dimL);
+    writeln('Promedio de precios: ', promedioVector(vProductos, dimL):4:2);
 end.
