@@ -1,179 +1,145 @@
 {Implementar un programa modularizado para una librería que:
-a. Almacene los productos vendidos en una estructura eficiente para la búsqueda por código de producto. 
-De cada producto deben quedar almacenados la cantidad total 
-de unidades vendidas y el monto total. De cada venta se lee código de venta, código del producto vendido, 
-cantidad de unidades vendidas y precio unitario. 
-El ingreso de las ventas finaliza cuando se lee el código de venta -1.
+a. Almacene los productos vendidos en una estructura eficiente para la búsqueda por
+código de producto. De cada producto deben quedar almacenados la cantidad total de
+unidades vendidas y el monto total. De cada venta se lee código de venta, código del
+producto vendido, cantidad de unidades vendidas y precio unitario. El ingreso de las
+ventas finaliza cuando se lee el código de venta -1.
 b. Imprima el contenido del árbol ordenado por código de producto.
-c. Contenga un módulo que reciba la estructura generada en el punto a y retorne el código de 
-producto con mayor cantidad de unidades vendidas.
-d. Contenga un módulo que reciba la estructura generada en el punto a y un código de 
-producto y retorne la cantidad de códigos menores que él que hay en la 
-estructura.
-e. Contenga un módulo que reciba la estructura generada en el punto a y dos códigos de producto y 
-retorne el monto total entre todos los códigos de productos 
-comprendidos entre los dos valores recibidos (sin incluir).}
+c. Contenga un módulo que reciba la estructura generada en el punto a y retorne el
+código de producto con mayor cantidad de unidades vendidas.
+d. Contenga un módulo que reciba la estructura generada en el punto a y un código de
+producto y retorne la cantidad de códigos menores que él que hay en la estructura.
+e. Contenga un módulo que reciba la estructura generada en el punto a y dos códigos de
+producto y retorne el monto total entre todos los códigos de productos comprendidos
+entre los dos valores recibidos (sin incluir).}
 
-program ejercicio1clase4;
-type
-  venta = record
-    codigov: integer;
-    codigop: integer;
-    cant: integer;
-    precio:real;
-  end;
-  
-  producto = record
-    cantotal: integer;
-    montototal: real;
-    codigop: integer;
-  end;
-  
-  arbol = ^nodo;
-  nodo = record
-    dato: producto;
-    HI: arbol;
-    HD: arbol;
-  end;
-  
-procedure leerventa(var v: venta);
+program ejercicio1;
+type 
+    venta = record
+        codVenta: integer;
+        codProducto: integer;
+        cantUnidades: integer;
+        precioUnitario: real;
+    end;
+
+    producto = record
+        codProducto: integer;
+        cantUnidadesVendidas: integer;
+        montoTotal: real;
+    end;
+
+    arbol = ^nodo;
+    nodo = record
+        dato: producto;
+        HI: arbol;
+        HD: arbol;
+    end;
+
+procedure leerVenta(var v: venta);
 begin
-  writeln('ingrese el codigo de venta');
-  readln(v.codigov);
-  if(v.codigov <> -1)then begin
-    writeln('ingrese el codigo de producto');
-    readln(v.codigop);
-    writeln('ingrese la cantidad de unidades vendidas');
-    readln(v.cant);
-    writeln('ingrese el precio');
-    readln(v.precio);
-  end;
+    writeln('Ingrese el codigo de venta');
+    readln(v.codVenta);
+    if (v.codVenta <> -1) then
+    begin
+        writeln('Ingrese el codigo de producto');
+        readln(v.codProducto);
+        writeln('Ingrese la cantidad de unidades vendidas');
+        readln(v.cantUnidades);
+        writeln('Ingrese el precio unitario');
+        readln(v.precioUnitario);
+    end;
 end;
 
 procedure agregarproductos(var a: arbol; p: producto);
 begin
-  if(a = nil)then begin
-    new(a);
-    a^.dato:= p;
-    a^.HI:= nil;
-    a^.HD:= nil;
-  end
-  else if(p.codigop = a^.dato.codigop)then begin
-    a^.dato.cantotal:= a^.dato.cantotal + p.cantotal;
-    a^.dato.montototal:= a^.dato.montototal + p.montototal;
-  end
-  else if (p.codigop < a^.dato.codigop) then
-    agregarproductos(a^.HI, p)
-  else
-    agregarproductos(a^.HD, p);
+    if(a = nil)then begin
+        new(a);
+        a^.dato:= p;
+        a^.HI:= nil;
+        a^.HD:= nil;
+    end
+    else if(p.codigop = a^.dato.codigop)then begin
+        a^.dato.cantUnidadesVendidas:= a^.dato.cantUnidadesVendidas + p.cantUnidadesVendidas;
+        a^.dato.montototal:= a^.dato.montototal + p.montototal;
+    end
+    else if (p.codigop < a^.dato.codigop) then
+        agregarproductos(a^.HI, p)
+    else
+        agregarproductos(a^.HD, p);
 end;
 
-procedure cargararbol(var a:arbol);
+procedure cargarArbol(var a: arbol);
 var
-  v:venta;
-  p:producto;
+    v: venta;
+    p: producto;
 begin
-  leerventa(v);
-  if (v.codigov <> -1) then begin
-    p.codigop:= v.codigop;
-    p.cantotal:= v.cant;
-    p.montototal:= v.precio * v.cant;
-    agregarproductos(a,p);
-    cargararbol(a);
-  end;
-end;
-
-{b. Imprima el contenido del árbol ordenado por código de producto.}
-
-procedure imprimircontenido(a: arbol);
-begin
-  if(a <> nil)then begin
-    imprimircontenido(a^.HI);
-    writeln('El monto total del codigo de producto, ', a^.dato.codigop, ' es ', a^.dato.montototal:0:2 ,' y la cantidad de unidades vendidas es ', a^.dato.cantotal);
-    imprimircontenido(a^.HD);
-  end;
-end;
-
-{c. Contenga un módulo que reciba la estructura generada en el punto a y retorne el código de 
-producto con mayor cantidad de unidades vendidas.}
-
-procedure maxcantv(a:arbol; var codigomax: integer; max: integer);
-begin
-  if(a <> nil)then begin
-    maxcantv(a^.HI, codigomax, max);
-    if(a^.dato.cantotal > max)then begin
-      max:= a^.dato.cantotal;
-      codigomax:= a^.dato.codigop;
+    leerVenta(v);
+    while(v.codVenta <> -1)do begin
+        p.codProducto:= v.codProducto;
+        p.cantUnidadesVendidas:= v.cantUnidades;
+        p.montoTotal:= v.cantUnidades * v.precioUnitario;
+        agregarproductos(a, p);
+        leerVenta(v);
     end;
-    maxcantv(a^.HD, codigomax, max);
-  end;
 end;
 
-{d. Contenga un módulo que reciba la estructura generada en el punto a y un código de 
-producto y retorne la cantidad de códigos menores que él que hay en la 
-estructura.}
-
-{procedure cantmenores(a:arbol; num: integer; var cant: integer);
+procedure imprimirArbol(a: arbol);
 begin
-  if(a <> nil)then begin
-    if(num > a^.dato.codigop)then begin
-      cant:= cant + 1;
-      cantmenores(a^.HD, num, cant)
-    end
-    else
-      cantmenores(a^.HI, num, cant);
-  end;
-end;}
-
-
-procedure cantmenores (a:arbol; var cant:integer; num:integer);
-begin
-  if (a <> nil) then 
-    if(num > a^.dato.codigop)then begin
-      cant:= cant + 1;
-      cantmenores(a^.HI,cant,num);
-      cantmenores(a^.HD,cant,num);
-    end
-    else
-      cantmenores(a^.HI,cant,num);
+    if(a <> nil)then begin
+        imprimirArbol(a^.HI);
+        writeln('Codigo de producto: ', a^.dato.codProducto);
+        writeln('Cantidad de unidades vendidas: ', a^.dato.cantUnidadesVendidas);
+        writeln('Monto total: ', a^.dato.montoTotal:2:2);
+        imprimirArbol(a^.HD);
+    end;
 end;
 
-procedure informarbetween(a:arbol; code1, code2: integer; var monto: real);
+procedure maximoCantidadUnidadesVendidas(a: arbol; var max: integer; var cod: integer);
 begin
-  if(a <> nil)then
-    if(code1 < a^.dato.codigop)then begin
-      if (code2 > a^.dato.codigop) then begin
-        monto:= monto + a^.dato.montototal;
-        informarbetween(a^.HI,code1,code2,monto);
-        informarbetween(a^.HD,code1,code2,monto);
-      end
-      else
-        informarbetween(a^.HI,code1,code2,monto);
-      end
+    if(a <> nil)then begin
+        if(a^.dato.cantUnidadesVendidas > max)then begin
+            max:= a^.dato.cantUnidadesVendidas;
+            cod:= a^.dato.codProducto;
+        end;
+        maximoCantidadUnidadesVendidas(a^.HI, max, cod);
+        maximoCantidadUnidadesVendidas(a^.HD, max, cod);
+    end;
+end;
+
+function cantidadMenores(a: arbol; cod: integer): integer;
+begin
+    if(a = nil)then
+        cantidadMenores:= 0
+    else if(a^.dato.codProducto < cod)then
+        cantidadMenores:= 1 + cantidadMenores(a^.HI, cod) + cantidadMenores(a^.HD, cod)
     else
-      informarbetween(a^.HD,code1,code2,monto);
+        cantidadMenores:= cantidadMenores(a^.HI, cod);
+end;
+
+function montoTotalEntreCodigos(a: arbol; cod1, cod2: integer): real;
+begin
+    if(a = nil)then
+        montoTotalEntreCodigos:= 0
+    else if(a^.dato.codProducto > cod1) and (a^.dato.codProducto < cod2)then
+        montoTotalEntreCodigos:= a^.dato.montoTotal + montoTotalEntreCodigos(a^.HI, cod1, cod2) + montoTotalEntreCodigos(a^.HD, cod1, cod2)
+    else if(a^.dato.codProducto < cod1)then
+        montoTotalEntreCodigos:= montoTotalEntreCodigos(a^.HD, cod1, cod2)
+    else
+        montoTotalEntreCodigos:= montoTotalEntreCodigos(a^.HI, cod1, cod2);
 end;
 
 var
-  a: arbol;
-  num, cant, codigomax, max, code1, code2:integer;
-  monto:real;
-begin 
-  a:= nil;
-  cargararbol(a);
-  imprimircontenido(a);
-  max:= -9999;
-  maxcantv(a,codigomax,max);
-  writeln('el codigo de producto que tiene mas ventas es: ', codigomax);
-  writeln('Ingrese un codigo para chequear la cantidad de codigos menores a el');
-  readln(num);
-  cant:= 0;
-  cantmenores(a, cant, num);
-  writeln('la cantidad de codigos menores al codigo ingresado es: ', cant);
-  writeln('ingrese dos codigos separados por un enter, el primer codigo debe ser menor que el segundo');
-  readln(code1);
-  readln(code2);
-  monto:= 0;
-  informarbetween(a,code1,code2,monto);
-  writeln('el monto entre los dos codigos leidos es: ' , monto:0:2);
+    a: arbol;
+    max, cod: integer;
+begin
+    a:= nil;
+    cargarArbol(a);
+    writeln('Contenido del arbol ordenado por codigo de producto');
+    imprimirArbol(a);
+    max:= -1;
+    cod:= -1;
+    maximoCantidadUnidadesVendidas(a, max, cod);
+    writeln('El codigo de producto con mayor cantidad de unidades vendidas es: ', cod);
+    writeln('La cantidad de codigos menores que ', cod, ' es: ', cantidadMenores(a, cod));
+    writeln('El monto total entre los codigos de productos comprendidos entre 1 y 5 es: ', montoTotalEntreCodigos(a, 1, 5):2:2);
 end.
