@@ -1,4 +1,4 @@
-{1.- Se desea procesar la información de las ventas de productos de un comercio (como máximo
+{Se desea procesar la información de las ventas de productos de un comercio (como máximo
 50).
 Implementar un programa que invoque los siguientes módulos:
 a. Un módulo que retorne la información de las ventas en un vector. De cada venta se conoce el
@@ -13,76 +13,96 @@ valores que se ingresan como parámetros.
 f. Un módulo que muestre el contenido del vector resultante del punto e).
 g. Un módulo que retorne la información (ordenada por código de producto de menor a
 mayor) de cada código par de producto junto a la cantidad total de productos vendidos.
-h. Un módulo que muestre la información obtenida en el punto g}
+h. Un módulo que muestre la información obtenida en el punto g).}
 
-program ejercicio1prac1;
+program ejercicio1;
 type
-  drango = 0..31;
-  crango = 1..15;
-  urango = 0..99;
-  ventas = record
-    dia: drango;
-    codigo: crango;
-    cantvendida: urango;
-  end;
-  
-  vector = array[1..50]of ventas;
-  
-  Lista = ^nodo
-  nodo = record
-    dato:ventas;
-    sig:lista;
+    cRango = 1..15;
+    dRango = 1..31;
 
-procedure leerventa(var venta: ventas);
+    venta = record
+        dia: dRango;
+        codigo: cRango;
+        cantidad: integer;
+    end;
+
+    vector = array [1..50] of venta;
+
+procedure leerVenta(var v: venta); 
 begin
-  readln(venta.dia);
-  if(venta.dia <> 0)then begin
-    randomize;
-    venta.codigo:= random(15)+ 1;
-    readln(venta.cantvendida);
-  end;
-end; 
-  
-{A}procedure cargarvector(var v: vector; var diml:integer);
+    with v do begin
+        writeln('Ingrese el dia de la venta: ');
+        readln(dia);
+        if (dia <> 0) then begin
+            codigo:= random(15)+1;
+            writeln('Ingrese la cantidad vendida: ');
+            readln(cantidad);
+        end;
+    end;
+end;
+
+{a}
+procedure cargarVector(var v: vector; var dimL: integer);
 var
-  venta: ventas
+    vta: venta;
 begin
-  diml:= 0;
-  leerventa(venta);
-  while(venta.dia <> 0)and (diml < 50)do begin 
-    diml:= diml + 1
-    v[diml]:= venta;
-    leerventa(venta);
-  end;
+    dimL:= 0;
+    leerVenta(vta);
+    while (vta.dia <> 0) and (dimL < 50) do begin
+        dimL := dimL + 1;
+        v[dimL] := vta;
+        leerVenta(vta);
+    end;
 end;
 
-{B}procedure informarvector(v:vector; diml:integer);
-var 
-  i: integer;
+{b}
+procedure mostrarVector(v: vector; dimL: integer);
+var
+    i: integer;
 begin
-  for i:= 1 to diml do begin
-    writeln('El dia ' , v[i].dia , 'con el codigo ' , v[i].codigo , ' se realizaron esta cantidad de ventas ' , v[i].cantvendidas);
-  end;
+    for i:= 1 to dimL do 
+        writeln('Dia: ', v[i].dia, ' Codigo: ', v[i].codigo, ' Cantidad: ', v[i].cantidad);
 end;
 
-{C}procedure insercion ( var v: vector; diml: integer );
-var 
-  i, j: i; 
-  actual: ventas;	
+{c}
+procedure ordenarVector(var v: vector; dimL: integer);
+var
+    i, j: integer;
+    actual: venta;
 begin
- for i:= 2 to diml do begin 
-     actual:= v[i];
-     j:= i-1; 
-     while (j > 0) y (v[j].codigo > actual.codigo) do      
-       begin
-         v[j+1]:= v[j];
-         j:= j – 1;                  
-       end;  
-     v[j+1]:= actual; 
- end;
+    for i:= 2 to dimL do begin
+        actual:= v[i];
+        j:= i-1;
+        while (j > 0) and (v[j].codigo > actual.codigo) do begin
+            v[j+1]:= v[j];
+            j:= j-1;
+        end;
+        v[j+1]:= actual;
+    end;
 end;
 
-procedure eliminar(var v:vector; var diml: integer; var pude: boolean; code1, code2: integer);
+{d}
+procedure mostrarVectorOrdenado(v: vector; dimL: integer);
+begin
+    mostrarVector(v, dimL);
+end;
+
+{e}
+procedure eliminarVentas(var v: vector; var dimL: integer; min, max: cRango);
+var
+    i, j: integer;
+begin
+    j:= 0;
+    for i:= 1 to dimL do begin
+        if (v[i].codigo < min) or (v[i].codigo > max) then begin
+            j:= j+1;
+            v[j]:= v[i];
+        end;
+    end;
+    dimL:= j;
+end;
+
+{procedure eliminar(var v:vector; var diml: integer; var pude: boolean; code1, code2: integer);
 var
   i, pos1, pos2, j, z: integer;
   ok1, ok2: boolean;
@@ -108,52 +128,53 @@ begin
     dL:= dL - 1;
   end;       
   pude:= true;
+end;}
+
+{f}
+procedure mostrarVectorEliminado(v: vector; dimL: integer);
+begin
+    mostrarVector(v, dimL);
 end;
 
-procedure agregaratras(L: lista; v: ventas; var ult: lista);
+{g}
+procedure informarVentas(v: vector; dimL: integer);
 var
-  nue: lista;
+    i, codigoActual, total: integer;
 begin
-  new(nue);
-  nue^.dato:= v;
-  nue^.sig:= nil;
-  if(L = nil) then
-    L:= nue			
-  else				
-    ULT^.sig := nue; 	
-  ULT := nue;
+    i:= 1;
+    while (i <= dimL) do begin
+        codigoActual:= v[i].codigo;
+        total:= 0;
+        while (i <= diml) and (v[i].codigo = codigoActual) do begin
+            total:= total + v[i].cantidad;
+            i:= i+1;
+        end;
+        writeln('Codigo: ', codigoActual, ' Cantidad total vendida: ', total);
+    end;
 end;
 
-{g}function espar(num: integer):boolean;
+{h}
+procedure mostrarInformacion(v: vector; dimL: integer);
 begin
-  espar:= num mod 2 = 0
-end;
-
-{g}procedure cargarlista(v:vector; diml:integer; var L:lista; var cantvendida:integer);
-var
-  ult: lista;
-  i: integer;
-begin
-  cantvendida:= 0;
-  L:= nil;
-  for i:= 1 to diml do begin
-    if (cumple(v[i].codigo)) then
-      agregaratras(L, v[i], ult);
-    cantvendida:= cantvendida + v[i].cantvendida;
-  end;
+    informarVentas(v, dimL);
 end;
 
 var
-  v: vector;
-  diml, cantvendida, code1, code2: integer;
+    v: vector;
+    dimL, min, max: integer;
 begin
-  cargarvector(v,diml);
-  informarvector(v,diml);
-  insercion(v, diml);
-  informarvector(v,diml);
-  read(code1);
-  read(code2);
-  eliminar(v, diml, pude, code1, code2);
-  cargarlista(v, diml, L, cantvendida);
-  informarvector(v,diml);
+    randomize;
+    cargarVector(v, dimL);
+    writeln('Vector original: ');
+    mostrarVector(v, dimL);
+    ordenarVector(v, dimL);
+    writeln('Vector ordenado: ');
+    mostrarVectorOrdenado(v, dimL);
+    writeln('Ingrese el minimo y el maximo de los codigos a eliminar: ');
+    readln(min, max);
+    eliminarVentas(v, dimL, min, max);
+    writeln('Vector eliminado: ');
+    mostrarVectorEliminado(v, dimL);
+    writeln('Informacion de ventas: ');
+    informarVentas(v, dimL);
 end.

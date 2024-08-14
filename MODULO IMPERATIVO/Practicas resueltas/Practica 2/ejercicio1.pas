@@ -1,4 +1,4 @@
-{1.- Implementar un programa que invoque a los siguientes módulos.
+{Implementar un programa que invoque a los siguientes módulos.
 a. Un módulo recursivo que permita leer una secuencia de caracteres terminada en punto, los
 almacene en un vector con dimensión física igual a 10 y retorne el vector.
 b. Un módulo que reciba el vector generado en a) e imprima el contenido del vector.
@@ -14,105 +14,113 @@ la lista en orden inverso al que están almacenados.}
 
 program ejercicio1;
 const
-  dimf = 10;
+    dimF = 10;
 type
-  vector = array[1..dimf]of char;
-  
-  lista = ^nodo;
-  nodo = record
-    dato: char;
-    sig: lista;
-  end;
-  
-procedure leercaracteres(var v:vector; var diml:integer);
-var
-  c: char;
-begin
-    diml:= diml + 1;
-    readln(c);
-    if(diml < dimf)then 
-      v[diml]:= c;
-    if(c <> '.') then 
-      leercaracteres(v, diml);
-end;  
-{b}procedure imprimirvector(v: vector; diml:integer);
-var
-  i: integer;
-begin
-  for i:= 1 to diml do
-    writeln(v[i])
-end;  
+    vector = array [1..dimF] of char;
 
-{c}procedure recursivamente(v: vector; diml: integer);
-begin
-  if(diml > 0) then begin
-    writeln(v[diml]);
-    recursivamente(v,diml-1);
-  end;
-end;
+    lista = ^nodo;
+    nodo = record
+        dato: char;
+        sig: lista;
+    end;
 
-procedure leerchar(var cant:integer);
-var
-  c: char;
-begin
-  readln(c);
-  if (c <> '.') then begin
-    cant:= cant + 1;
-    leerchar(cant);
-  end;  
-end;
-
-procedure agregaradelante(var L:lista; c:char);
+{a}
+procedure leerVector(var v: vector; var dimL: integer);
 var 
-  nue: lista;
+    c: char;
 begin
-  new(nue);
-  nue^.dato:= c;
-  nue^.sig:= L;
-  L:= nue;
+    writeln('Ingrese un caracter');
+    readln(c)
+    if (diml < dimf) and (c <> '.') then begin
+        diml := diml + 1;
+        v[diml] := c;
+        leerVector(v, diml);
+    end;
 end;
 
-procedure cargarlista(var L: lista);
+{b}
+procedure imprimirVector(v: vector; dimL: integer);
 var
-  c: char;
+    i: integer;
 begin
-  readln(c);
-  if(c <> '.')then begin
-    agregaradelante(L,c);
-    cargarlista(L);
-  end;
-end;   
+    for i := 1 to dimL do
+        write(v[i], ' ');
+end;
 
-procedure imprimirlista1(L: lista);
+{c}
+procedure imprimirVectorRec(v: vector; dimL: integer);
 begin
-  if(L <> nil) do begin
-    imprimirlista1(L^.sig);
-    writeln(L^.dato);
-  end;
-end;
-   
-procedure imprimirlista2(L: lista);
-begin
-  if(L <> nil) do begin
-    writeln(L^.dato);
-    imprimirlista2(L^.sig);
-  end;
-end;
-    
+    if (dimL > 0) then begin
+        write(v[dimL], ' ');
+        imprimirVectorRec(v, dimL-1);
+    end;
+end;    
+
+{d}
+function cantidadCaracteres(): integer;
 var
-  L: lista;
-  diml:integer;
-  v:vector;
-  cant:integer;
+    c: char;
 begin
-  diml:= 0;
-  leercaracteres(v, diml);
-  imprimirvector(v, diml);
-  recursivamente(v, diml);
-  cant:= 0;
-  leerchar(cant);
-  writeln(cant);
-  cargarlista(L);
-  imprimirlista1(L);
-  imprimirlista2(L);
+    writeln('Ingrese un caracter');
+    readln(c);
+    if (c <> '.') then
+        cantidadCaracteres := 1 + cantidadCaracteres()
+    else
+        cantidadCaracteres := 0;
+end;
+
+procedure agregarAdelante(var l: lista; c: char);
+var
+    nuevo: lista;
+begin
+    new(nuevo);
+    nuevo^.dato := c;
+    nuevo^.sig := l;
+    l := nuevo;
+end;
+
+{e}
+procedure crearLista(var l: lista);
+var
+    c: char;
+begin
+    writeln('Ingrese un caracter');
+    readln(c);
+    if (c <> '.') then begin
+        agregarAdelante(l, c);
+        crearLista(l);
+end;
+
+{f}
+procedure imprimirLista(l: lista);
+begin   
+    if (l <> nil) then begin
+        write(l^.dato, ' ');
+        imprimirLista(l^.sig);
+    end;
+end;
+
+{g}
+procedure imprimirListaInversa(l: lista);
+begin
+    if (l <> nil) then begin
+        imprimirListaInversa(l^.sig);
+        write(l^.dato, ' ');
+    end;
+end;
+
+var
+    v: vector;
+    dimL: integer;
+    l: lista;  
+begin
+    dimL := 0;
+    l := nil;
+    leerVector(v, dimL);
+    imprimirVector(v, dimL);
+    imprimirVectorRec(v, dimL);
+    writeln('La cantidad de caracteres leidos es: ', cantidadCaracteres());
+    crearLista(l);
+    imprimirLista(l);
+    imprimirListaInversa(l);
 end.

@@ -1,141 +1,134 @@
+{Netflix ha publicado la lista de películas que estarán disponibles durante el mes de
+diciembre de 2022. De cada película se conoce: código de película, código de género (1: acción,
+2: aventura, 3: drama, 4: suspenso, 5: comedia, 6: bélico, 7: documental y 8: terror) y puntaje
+promedio otorgado por las críticas.
+Implementar un programa que invoque a módulos para cada uno de los siguientes puntos:
+a. Lea los datos de películas, los almacene por orden de llegada y agrupados por código de
+género, y retorne en una estructura de datos adecuada. La lectura finaliza cuando se lee el
+código de la película -1. b. Genere y retorne en un vector, para cada género, el código de película con mayor puntaje
+obtenido entre todas las críticas, a partir de la estructura generada en a)..
+c. Ordene los elementos del vector generado en b) por puntaje utilizando alguno de los dos
+métodos vistos en la teoría.
+d. Muestre el código de película con mayor puntaje y el código de película con menor puntaje,
+del vector obtenido en el punto c).}
+
 program ejercicio3;
-type
-  grango = 1..8;
-  pelicula = record
-    codigoPelicula: integer;
-    codigoGenero: grango;
-    puntaje: real;
-  end;
-  
-  listaPeliculas = ^nodoPeliculas;
-  nodoPeliculas = record
-    dato: pelicula;
-    sig: listaPeliculas;
-  end;
-  
-  puntajePromedio = record
-    codigo: integer;
-    puntaje: real;
-  end;
-  
-  vector = array[grango] of listaPeliculas;
-  vectorCodigos = array[grango] of puntajePromedio;
-  
-procedure leerPelicula(var p:pelicula);
-begin
-  writeln('Ingrese el codigo de la pelicula');
-  readln(p.codigoPelicula);
-  if(p.codigoPelicula <> -1)then begin
-    writeln('Ingrese el codigo de genero de la pelicula');
-    readln(p.codigoGenero);
-    writeln('Ingrese el puntaje promedio');
-    readln(p.puntaje);
-  end;  
-end;
+type 
+    gRango = 1..8;
 
-procedure agregarAtras(var L, ult: listaPeliculas; p: pelicula);
-var
-  nue: listaPeliculas;
-begin
-  new(nue);
-  nue^.dato:= p;
-  nue^.sig:= nil;
-  if(L = nil)then
-    L:= nue
-  else
-    ult^.sig:= nue;
-  ult:= nue;
-end;
+    pelicula = record
+        codigo: integer;
+        genero: gRango;
+        puntaje: real;
+    end;
 
-procedure cargarVector(var v:vector);
-var
-  p: pelicula;
-  ult: listaPeliculas;
-begin
-  leerPelicula(p);
-  while(p.codigoPelicula <> -1)do begin
-    agregarAtras(v[p.codigoGenero], ult, p);
-    leerPelicula(p);
-  end;
-end;
+    lista = ^nodo;
+    nodo = record
+        dato: pelicula;
+        sig: lista;
+    end;
+
+    vector = array [gRango] of lista;
+    vectorContador = array [gRango] of integer;
 
 procedure inicializarListas(var v: vector);
 var
-  i: integer;
+    i: integer;
 begin
-  for i:= 1 to 8 do
-    v[i]:= nil;
+    for i := 1 to 8 do
+        v[i] := nil;
 end;
 
-procedure maximos(L: listaPeliculas; var max: real; maxCode: integer);
+procedure inicializarVectorContador(var v: vectorContador);
+var
+    i: integer;
 begin
-  max:= -9999;
-  while(L <> nil)do begin
-    if(L^.dato.puntaje > max)then begin
-      max:= L^.dato.puntaje;
-      maxCode:= L^.dato.codigoPelicula;
+    for i := 1 to 8 do
+        v[i] := 0;
+end;
+
+procedure leerPelicula(var p: pelicula);
+begin
+    writeln('Ingrese el codigo de la pelicula');
+    readln(p.codigo);
+    if (p.codigo <> -1) then begin
+        writeln('Ingrese el codigo de genero');
+        readln(p.genero);
+        writeln('Ingrese el puntaje promedio');
+        readln(p.puntaje);
     end;
-    L:= L^.sig;
-  end;  
 end;
 
-procedure procesar(v:vector; var v2: vectorCodigos; var maxCode: integer);
+procedure agregarAtras(var pri, ult: lista; p: pelicula);
 var
-  i: integer;
-  max: real;
+    aux: lista;
 begin
-  for i:= 1 to 8 do begin
-    max:= 0;
-    maximos(v[i], max, maxCode);
-    v2[i].codigo:= maxCode;
-    v2[i].puntaje:= max;
-  end;  
+    new(aux);
+    aux^.dato := p;
+    aux^.sig := nil;
+    if (pri = nil) then
+        pri := aux
+    else
+        ult^.sig := aux;
+    ult := aux;
 end;
 
-procedure insercion(var v2: vectorCodigos);
+procedure cargarVector(var v: vector);
 var
-  i, j: integer;
-  actual: puntajePromedio; 
+    p: pelicula;
+    pri, ult: lista;
 begin
-  for i:= 1 to (8-1) do begin
-    actual:= v2[i];
-    j:= i-1; 
-    while (j > 0) and (v2[j].puntaje > actual.puntaje) do begin
-      v2[j+1]:= v2[j];
-      j:= j - 1;                  
-    end;  
-    v2[j+1]:= actual; 
-  end;  
-end;
-
-procedure maxYMinimo(v2: vectorCodigos; var maxCode, minCode: integer);
-var
-  i: integer;
-  maxPuntaje, minPuntaje: real;
-begin
-  maxPuntaje:= -9999;
-  minPuntaje:= 9999;
-  for i:= 1 to 8 do begin
-    if(v2[i].puntaje > maxPuntaje)then begin
-      maxPuntaje:= v2[i].puntaje;
-      maxCode:= v2[i].codigo
-    end  
-    else if(v2[i].puntaje < minPuntaje)then begin
-      minPuntaje:= v2[i].puntaje;
-      minCode:= v2[i].codigo;
+    leerPelicula(p);
+    while (p.codigo <> -1) do begin
+        agregarAtras(v[p.genero], ult, p);
+        leerPelicula(p);
     end;
-  end;      
 end;
 
+procedure maximoPuntaje(var v: vector; var vc: vectorContador);
 var
-  v: vector;
-  v2: vectorCodigos;
-  maxCode, minCode: integer;
-BEGIN
-  cargarVector(v);	
-  procesar(v, v2, maxCode);
-  insercion(v2);
-  maxYMinimo(v2, maxCode, minCode);
-  writeln('El codigo de pelicula con mayor puntaje es ', maxCode, ' y el de menor puntaje es ', minCode);	
-END.
+    i: integer;
+    max: real;
+    actual: lista;
+begin
+    for i := 1 to 8 do begin
+        actual := v[i];
+        max := -1;
+        while (actual <> nil) do begin
+            if (actual^.dato.puntaje > max) then begin
+                max := actual^.dato.puntaje;
+                vc[i] := actual^.dato.codigo;
+            end;
+            actual := actual^.sig;
+        end;
+    end;
+end;
 
+procedure ordenarVector(var vc: vectorContador);
+var
+    i, j, posMenor, actual: integer;
+begin
+    for i := 1 to 7 do begin
+        posMenor := i;
+        for j := i + 1 to 8 do begin
+            if (vc[j] < vc[posMenor]) then
+                posMenor := j;
+        end;
+        actual := vc[i];
+        vc[i] := vc[posMenor];
+        vc[posMenor] := actual;
+    end;
+end;
+
+var 
+    v: vector;
+    vc: vectorContador;
+begin
+    inicializarListas(v);
+    inicializarVectorContador(vc);
+    cargarVector(v);
+    maximoPuntaje(v, vc);
+    ordenarVector(vc);
+    writeln('El codigo de la pelicula con mayor puntaje es: ', vc[8]);
+    writeln('El codigo de la pelicula con menor puntaje es: ', vc[1]);
+end.
